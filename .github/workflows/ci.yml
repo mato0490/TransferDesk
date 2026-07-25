@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: "1"
+  QT_QPA_PLATFORM: offscreen
+
+jobs:
+  python-tests:
+    name: Python tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - macos-latest
+        python-version:
+          - "3.12"
+          - "3.13"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+      - name: Run Python tests
+        run: python -m unittest discover -v
+
+  package:
+    name: Package (${{ matrix.os }})
+    needs:
+      - python-tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - macos-latest
+        python-version:
+          - "3.12"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install packaging dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements-build.txt
+      - name: Build application
+        run: python -m PyInstaller --noconfirm --clean AutoSD-FileManager.spec
+      - name: Verify packaged network components (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath ".\dist\AutoSD-FileManager\AutoSD-FileManager.exe" -ArgumentList "--self-test-network" -Wait -PassThru
+          if ($process.ExitCode -ne 0) {
+            throw "Packaged network self-test failed with exit code $($process.ExitCode)."
+          }
+      - name: Sign and verify application bundle (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          codesign --force --deep --sign - "dist/AutoSD File Manager.app"
+          codesign --verify --deep --strict --verbose=2 "dist/AutoSD File Manager.app"
+          "dist/AutoSD File Manager.app/Contents/MacOS/AutoSD-FileManager" --self-test-network

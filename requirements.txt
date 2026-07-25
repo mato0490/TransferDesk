@@ -1,0 +1,4 @@
+Pillow>=10
+cryptography>=42
+aiortc>=1.15,<2
+PySide6>=6.8,<7

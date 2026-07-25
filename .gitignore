@@ -1,0 +1,32 @@
+# Environnements Python et caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Artefacts de construction et livrables locaux
+build/
+build-*/
+dist/
+dist-*/
+*.spec.bak
+*.exe
+*.msi
+*.dmg
+*.pkg
+*.app/
+
+# Configuration propre à une machine
+autosd-network.json
+!autosd-network.example.json
+
+# Éditeurs et système
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
