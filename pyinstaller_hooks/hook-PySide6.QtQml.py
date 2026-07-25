@@ -1,8 +1,8 @@
-"""Collect only the QML modules used by AutoSD.
+﻿"""Collect only the QML modules used by UltraPro.
 
 PyInstaller's generic PySide6 hook deliberately collects every QML module in
 the wheel.  That includes WebEngine, 3D, charts and multimedia even though the
-AutoSD interface imports only Qt Quick Controls, Layouts and Dialogs.
+UltraPro interface imports only Qt Quick Controls, Layouts and Dialogs.
 """
 
 from pathlib import PurePath

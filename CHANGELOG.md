@@ -1,4 +1,4 @@
-# Journal des modifications
+﻿# Journal des modifications
 
 Ce fichier recense les changements importants du projet. Les nouvelles entrées
 sont ajoutées dans la section **Non publié**, puis regroupées par version lors
@@ -8,6 +8,9 @@ d'une livraison.
 
 ### Fonctionnalités
 
+- renommage public du projet en UltraPro File Manager, avec suppression des
+  références utilisateur à l'ancien nom et aux cartes mémoire spécialisées dans
+  l'interface, les paquets, la CI et la documentation ;
 - refonte de `README.md` en guide utilisateur centré sur le téléchargement,
   l'installation Windows/macOS, les mises à jour et la compilation ;
 - ajout d'un onglet Aide affichant la version installée, le code persistant du
@@ -23,7 +26,7 @@ d'une livraison.
   partage un code `123456@adresse`, et l'expéditeur envoie fichiers ou dossiers
   avec suivi continu de la progression ;
 - ajout de la reprise automatique des transferts socket directs après coupure :
-  conservation des fichiers partiels `.autosd-part`, négociation des offsets,
+  conservation des fichiers partiels `.ultrapro-part`, négociation des offsets,
   reconnexion continue côté expéditeur et réécoute continue côté receveur
   jusqu'au succès ou à l'annulation, avec vérification SHA-256 finale ;
 - ajout des transferts P2P et réseau local dans l'historique des opérations ;
@@ -32,7 +35,7 @@ d'une livraison.
 - ajout d'une connexion WebRTC manuelle sans serveur de rendez-vous : échange
   signé et expirable d'une offre puis d'une réponse dans deux zones de texte,
   avant transfert direct chiffré entre les deux PC ;
-- ajout d'une icône AutoSD propre aux paquets Windows et macOS ;
+- ajout d'une icône UltraPro propre aux paquets Windows et macOS ;
 - finalisation du transfert réseau local dans l'interface Qt : découverte et
   sélection d'un appareil, choix des fichiers, demande d'autorisation côté
   destinataire et négociation automatique du code d'appairage ;
@@ -61,13 +64,13 @@ d'une livraison.
   l'indicateur P2P ; remplacement des erreurs vides par un diagnostic explicite ;
 - enrichissement des délais WebRTC avec les causes à vérifier sur le réseau
   local et l'indication de l'absence de relais TURN.
-- exclusion des autres instances AutoSD lancées sur le PC expéditeur dans la
+- exclusion des autres instances UltraPro lancées sur le PC expéditeur dans la
   liste des appareils découverts pour un envoi local.
 
 ### Maintenance
 
-- centralisation de la version de l'application dans `autosd_version.py` ;
-- extraction du moteur métier dans `autosd_core.py`, import direct depuis Qt et
+- centralisation de la version de l'application dans `ultrapro_version.py` ;
+- extraction du moteur métier dans `ultrapro_core.py`, import direct depuis Qt et
   retrait du client Tkinter du paquet PyInstaller ;
 - retrait complet de l'intégration Cloudflare, de l'adresse publique embarquée,
   du Worker, de ses outils de déploiement et de ses tests ; le P2P WebRTC reste

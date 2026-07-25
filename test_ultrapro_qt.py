@@ -1,4 +1,4 @@
-import os
+﻿import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,19 +12,19 @@ try:
     from PySide6.QtCore import QObject
     from PySide6.QtGui import QGuiApplication
     from PySide6.QtTest import QSignalSpy
-    import autosd_qt
+    import ultrapro_qt
 except (ImportError, SystemExit):
-    autosd_qt = None
+    ultrapro_qt = None
 
 
-@unittest.skipIf(autosd_qt is None, "PySide6 indisponible")
+@unittest.skipIf(ultrapro_qt is None, "PySide6 indisponible")
 class QtBridgeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = QGuiApplication.instance() or QGuiApplication([])
 
     def setUp(self):
-        self.bridge = autosd_qt.AutoSDBridge()
+        self.bridge = ultrapro_qt.UltraProBridge()
 
     def tearDown(self):
         self.bridge.shutdown()
@@ -55,7 +55,7 @@ class QtBridgeTests(unittest.TestCase):
         self.assertTrue(self.bridge._cancel.is_set())
 
     def test_worker_translates_result_to_signal(self):
-        signals = autosd_qt.WorkerSignals()
+        signals = ultrapro_qt.WorkerSignals()
         spy = QSignalSpy(signals.event)
         signals.event.emit("progress", {"completed": 1, "total": 2})
         self.assertEqual(spy.count(), 1)
@@ -106,20 +106,20 @@ class QtBridgeTests(unittest.TestCase):
 
     def test_manual_p2p_events_expose_copyable_payload(self):
         spy = QSignalSpy(self.bridge.manualPayloadChanged)
-        self.bridge._p2p_event("manual_offer_ready", {"payload": "AUTOSD-MANUAL-1.offer"})
+        self.bridge._p2p_event("manual_offer_ready", {"payload": "ULTRAPRO-MANUAL-1.offer"})
         self.assertEqual(self.bridge.p2pState, "manual_waiting")
         self.assertEqual(self.bridge.manualPayloadKind, "offer")
-        self.assertEqual(self.bridge.manualPayload, "AUTOSD-MANUAL-1.offer")
+        self.assertEqual(self.bridge.manualPayload, "ULTRAPRO-MANUAL-1.offer")
         self.assertEqual(spy.count(), 1)
 
         self.bridge.copyManualPayload()
         self.assertEqual(
-            QGuiApplication.clipboard().text(), "AUTOSD-MANUAL-1.offer"
+            QGuiApplication.clipboard().text(), "ULTRAPRO-MANUAL-1.offer"
         )
 
     def test_manual_clear_resets_payload_code_and_state(self):
         self.bridge._p2p_event("room_ready", {"code": "ABCD-EFGH.SECRET-CODE"})
-        self.bridge._p2p_event("manual_offer_ready", {"payload": "AUTOSD-MANUAL-1.offer"})
+        self.bridge._p2p_event("manual_offer_ready", {"payload": "ULTRAPRO-MANUAL-1.offer"})
 
         self.bridge.clearManualP2P()
 
@@ -149,12 +149,12 @@ class QtBridgeTests(unittest.TestCase):
 
     def test_socket_code_uses_stable_pairing_code_and_default_port(self):
         self.assertRegex(self.bridge.socketPairingCode, r"^\d{6}$")
-        formatted = self.bridge._format_socket_code("192.168.1.20", autosd_qt.nt.DEFAULT_PORT)
+        formatted = self.bridge._format_socket_code("192.168.1.20", ultrapro_qt.nt.DEFAULT_PORT)
 
         host, port, code = self.bridge._parse_socket_code(formatted)
 
         self.assertEqual(host, "192.168.1.20")
-        self.assertEqual(port, autosd_qt.nt.DEFAULT_PORT)
+        self.assertEqual(port, ultrapro_qt.nt.DEFAULT_PORT)
         self.assertEqual(code, self.bridge.socketPairingCode)
 
     def test_socket_code_accepts_explicit_port(self):
@@ -200,7 +200,7 @@ class QtBridgeTests(unittest.TestCase):
                     created["paths"] = list(paths)
                     return result
 
-            with mock.patch.object(autosd_qt.nt, "LocalTransferClient", FakeClient), mock.patch.object(
+            with mock.patch.object(ultrapro_qt.nt, "LocalTransferClient", FakeClient), mock.patch.object(
                 self.bridge,
                 "_start",
                 side_effect=lambda operation, done=None, failed=None: done(operation()),
@@ -225,10 +225,10 @@ class QtBridgeTests(unittest.TestCase):
                 def send_files(self, _paths):
                     attempts["count"] += 1
                     if attempts["count"] < 4:
-                        raise autosd_qt.nt.NetworkTransferError("connection lost")
+                        raise ultrapro_qt.nt.NetworkTransferError("connection lost")
                     return result
 
-            with mock.patch.object(autosd_qt.nt, "LocalTransferClient", FlakyClient), mock.patch.object(
+            with mock.patch.object(ultrapro_qt.nt, "LocalTransferClient", FlakyClient), mock.patch.object(
                 self.bridge, "_wait_socket_retry"
             ), mock.patch.object(
                 self.bridge,
@@ -256,10 +256,10 @@ class QtBridgeTests(unittest.TestCase):
                 def serve_once(self):
                     attempts["count"] += 1
                     if attempts["count"] < 4:
-                        raise autosd_qt.nt.NetworkTransferError("connection lost")
+                        raise ultrapro_qt.nt.NetworkTransferError("connection lost")
                     return result
 
-            with mock.patch.object(autosd_qt.nt, "LocalTransferServer", FlakyServer), mock.patch.object(
+            with mock.patch.object(ultrapro_qt.nt, "LocalTransferServer", FlakyServer), mock.patch.object(
                 self.bridge, "_wait_socket_retry"
             ), mock.patch.object(
                 self.bridge,
@@ -301,7 +301,7 @@ class QtBridgeTests(unittest.TestCase):
 
 
     def test_discovered_devices_are_exposed_to_qml(self):
-        device = autosd_qt.nt.DiscoveredDevice(
+        device = ultrapro_qt.nt.DiscoveredDevice(
             device_id="peer-1",
             name="Studio",
             host="192.168.1.20",
@@ -309,7 +309,7 @@ class QtBridgeTests(unittest.TestCase):
             ready=True,
         )
         with mock.patch.object(
-            autosd_qt.nt, "discover_devices", return_value=[device]
+            ultrapro_qt.nt, "discover_devices", return_value=[device]
         ) as discover, mock.patch.object(
             self.bridge,
             "_start",
@@ -332,13 +332,13 @@ class QtBridgeTests(unittest.TestCase):
         self.assertFalse(self.bridge.busy)
 
     def test_update_check_exposes_available_release(self):
-        release = autosd_qt.updater.UpdateRelease(
+        release = ultrapro_qt.updater.UpdateRelease(
             version="8.0.1",
             tag="v8.0.1",
             page_url="https://example.test/release",
             body="",
-            asset=autosd_qt.updater.ReleaseAsset("AutoSD-FileManager-windows-v8.0.1.zip", "https://example.test/app.zip", 1024),
-            checksum_asset=autosd_qt.updater.ReleaseAsset("AutoSD-FileManager-windows-v8.0.1.zip.sha256", "https://example.test/app.zip.sha256", 80),
+            asset=ultrapro_qt.updater.ReleaseAsset("UltraPro-FileManager-windows-v8.0.1.zip", "https://example.test/app.zip", 1024),
+            checksum_asset=ultrapro_qt.updater.ReleaseAsset("UltraPro-FileManager-windows-v8.0.1.zip.sha256", "https://example.test/app.zip.sha256", 80),
         )
         with mock.patch.object(
             self.bridge,
@@ -371,19 +371,19 @@ class QtBridgeTests(unittest.TestCase):
         self.assertEqual(self.bridge.updateState, "idle")
 
     def test_update_download_progress_and_ready_state(self):
-        release = autosd_qt.updater.UpdateRelease(
+        release = ultrapro_qt.updater.UpdateRelease(
             version="8.0.1",
             tag="v8.0.1",
             page_url="https://example.test/release",
             body="",
-            asset=autosd_qt.updater.ReleaseAsset("AutoSD-FileManager-windows-v8.0.1.zip", "https://example.test/app.zip", 100),
-            checksum_asset=autosd_qt.updater.ReleaseAsset("AutoSD-FileManager-windows-v8.0.1.zip.sha256", "https://example.test/app.zip.sha256", 80),
+            asset=ultrapro_qt.updater.ReleaseAsset("UltraPro-FileManager-windows-v8.0.1.zip", "https://example.test/app.zip", 100),
+            checksum_asset=ultrapro_qt.updater.ReleaseAsset("UltraPro-FileManager-windows-v8.0.1.zip.sha256", "https://example.test/app.zip.sha256", 80),
         )
-        downloaded = autosd_qt.updater.DownloadedUpdate(release, Path("C:/tmp/app.zip"), "a" * 64)
+        downloaded = ultrapro_qt.updater.DownloadedUpdate(release, Path("C:/tmp/app.zip"), "a" * 64)
         self.bridge._update_release = release
 
         with mock.patch.object(
-            autosd_qt.updater,
+            ultrapro_qt.updater,
             "download_update",
             side_effect=lambda release, destination, progress=None: (
                 progress(50, 100),
@@ -410,10 +410,10 @@ class QtBridgeTests(unittest.TestCase):
         self.assertNotIn("request-1", self.bridge._pending_local_requests)
 
     def test_qml_interface_loads(self):
-        engine = autosd_qt.QQmlApplicationEngine()
+        engine = ultrapro_qt.QQmlApplicationEngine()
         engine.rootContext().setContextProperty("backend", self.bridge)
-        qml = Path(autosd_qt.__file__).with_name("qml") / "Main.qml"
-        engine.load(autosd_qt.QUrl.fromLocalFile(str(qml)))
+        qml = Path(ultrapro_qt.__file__).with_name("qml") / "Main.qml"
+        engine.load(ultrapro_qt.QUrl.fromLocalFile(str(qml)))
         self.assertTrue(engine.rootObjects())
         self.assertIsNotNone(engine.rootObjects()[0].findChild(QObject, "errorDialog"))
         self.assertIsNotNone(engine.rootObjects()[0].findChild(QObject, "localFolderDialog"))
@@ -421,10 +421,10 @@ class QtBridgeTests(unittest.TestCase):
         self.assertIsNotNone(engine.rootObjects()[0].findChild(QObject, "manualOutput"))
 
     def test_qml_compact_window_keeps_long_pages_scrollable(self):
-        engine = autosd_qt.QQmlApplicationEngine()
+        engine = ultrapro_qt.QQmlApplicationEngine()
         engine.rootContext().setContextProperty("backend", self.bridge)
-        qml = Path(autosd_qt.__file__).with_name("qml") / "Main.qml"
-        engine.load(autosd_qt.QUrl.fromLocalFile(str(qml)))
+        qml = Path(ultrapro_qt.__file__).with_name("qml") / "Main.qml"
+        engine.load(ultrapro_qt.QUrl.fromLocalFile(str(qml)))
         root = engine.rootObjects()[0]
         root.setWidth(900)
         root.setHeight(620)

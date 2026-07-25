@@ -1,4 +1,4 @@
-"""Authenticated file transfers between AutoSD instances on a local network.
+﻿"""Authenticated file transfers between UltraPro instances on a local network.
 
 The protocol deliberately uses only Python's standard library so it also works
 in the packaged Windows application.  A short-lived pairing code authenticates
@@ -37,13 +37,13 @@ from typing import Callable, Iterable
 PROTOCOL_VERSION = 1
 DEFAULT_PORT = 48721
 DISCOVERY_PORT = 48720
-DISCOVERY_MAGIC = "AUTOSD_DISCOVERY_V1"
-INTERNET_INVITATION_PREFIX = "AUTOSD1-"
+DISCOVERY_MAGIC = "ULTRAPRO_DISCOVERY_V1"
+INTERNET_INVITATION_PREFIX = "ULTRAPRO1-"
 NETWORK_CHUNK_SIZE = 1024 * 1024
 MAX_CONTROL_FRAME = 1024 * 1024
 MAX_DATAGRAM_SIZE = 64 * 1024
 PBKDF2_ROUNDS = 120_000
-RESUME_PART_SUFFIX = ".autosd-part"
+RESUME_PART_SUFFIX = ".ultrapro-part"
 EventCallback = Callable[[str, dict], None]
 
 
@@ -94,7 +94,7 @@ class InternetInvitation:
     pairing_code: str
     tls_fingerprint: str
     expires_at: int
-    device_name: str = "AutoSD PC"
+    device_name: str = "UltraPro PC"
 
     def encode(self) -> str:
         payload = json.dumps(
@@ -117,10 +117,10 @@ class InternetInvitation:
     def decode(cls, raw_value: str, now: int | None = None) -> InternetInvitation:
         compact = "".join(raw_value.split())
         if not compact.startswith(INTERNET_INVITATION_PREFIX):
-            raise NetworkTransferError("Invalid AutoSD Internet invitation.")
+            raise NetworkTransferError("Invalid UltraPro Internet invitation.")
         encoded = compact.removeprefix(INTERNET_INVITATION_PREFIX)
         if not encoded or len(encoded) > 4096:
-            raise NetworkTransferError("Invalid AutoSD Internet invitation.")
+            raise NetworkTransferError("Invalid UltraPro Internet invitation.")
         encoded += "=" * (-len(encoded) % 4)
         try:
             compressed = base64.urlsafe_b64decode(encoded.encode("ascii"))
@@ -134,19 +134,19 @@ class InternetInvitation:
             code = _validate_pairing_code(str(data["c"]))
             fingerprint = str(data["f"]).lower()
             expires_at = int(data["e"])
-            device_name = str(data.get("n", "AutoSD PC"))
+            device_name = str(data.get("n", "UltraPro PC"))
         except (
             KeyError, ValueError, TypeError, UnicodeError,
             binascii.Error, zlib.error, json.JSONDecodeError,
         ) as exc:
-            raise NetworkTransferError("Invalid AutoSD Internet invitation.") from exc
+            raise NetworkTransferError("Invalid UltraPro Internet invitation.") from exc
         if data.get("v") != PROTOCOL_VERSION or not host or not 1 <= port <= 65535:
-            raise NetworkTransferError("Invalid AutoSD Internet invitation.")
+            raise NetworkTransferError("Invalid UltraPro Internet invitation.")
         if len(fingerprint) != 64 or any(char not in "0123456789abcdef" for char in fingerprint):
             raise NetworkTransferError("Invalid TLS fingerprint in the invitation.")
         current_time = int(time.time()) if now is None else int(now)
         if expires_at <= current_time:
-            raise NetworkTransferError("This AutoSD Internet invitation has expired.")
+            raise NetworkTransferError("This UltraPro Internet invitation has expired.")
         return cls(host, port, code, fingerprint, expires_at, device_name)
 
 
@@ -160,7 +160,7 @@ class TLSIdentity:
         self._temporary_directory.cleanup()
 
 
-def create_tls_identity(common_name: str = "AutoSD Internet Transfer") -> TLSIdentity:
+def create_tls_identity(common_name: str = "UltraPro Internet Transfer") -> TLSIdentity:
     """Create a short-lived TLS 1.3 identity pinned by the invitation."""
     from cryptography import x509
     from cryptography.hazmat.primitives import hashes, serialization
@@ -181,7 +181,7 @@ def create_tls_identity(common_name: str = "AutoSD Internet Transfer") -> TLSIde
         .add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=True)
         .sign(private_key, hashes.SHA256())
     )
-    temporary_directory = tempfile.TemporaryDirectory(prefix="autosd-tls-")
+    temporary_directory = tempfile.TemporaryDirectory(prefix="ultrapro-tls-")
     certificate_path = Path(temporary_directory.name) / "certificate.pem"
     private_key_path = Path(temporary_directory.name) / "private-key.pem"
     certificate_path.write_bytes(certificate.public_bytes(serialization.Encoding.PEM))
@@ -248,7 +248,7 @@ def _validate_pairing_code(code: str) -> str:
 
 
 def _derive_key(code: str, client_nonce: bytes, server_nonce: bytes) -> bytes:
-    salt = b"AutoSD-LAN-v1" + client_nonce + server_nonce
+    salt = b"UltraPro-LAN-v1" + client_nonce + server_nonce
     return hashlib.pbkdf2_hmac("sha256", code.encode("ascii"), salt, PBKDF2_ROUNDS)
 
 
@@ -394,7 +394,7 @@ def _partial_path_for(target: Path) -> Path:
 
 
 class LocalTransferClient:
-    """Send a batch of files to one listening AutoSD instance."""
+    """Send a batch of files to one listening UltraPro instance."""
 
     def __init__(
         self,
@@ -845,7 +845,7 @@ def _datagram(kind: str, **values: object) -> bytes:
 
 
 class DiscoveryService:
-    """Advertise one running AutoSD instance and receive transfer requests."""
+    """Advertise one running UltraPro instance and receive transfer requests."""
 
     def __init__(
         self,
@@ -856,7 +856,7 @@ class DiscoveryService:
     ) -> None:
         self.callback = callback or (lambda _event, _data: None)
         self.port = int(port)
-        self.device_name = (device_name or socket.gethostname()).strip() or "AutoSD PC"
+        self.device_name = (device_name or socket.gethostname()).strip() or "UltraPro PC"
         self.instance_id = instance_id or secrets.token_hex(16)
         self.bound_port: int | None = None
         self.ready_event = threading.Event()
@@ -873,7 +873,7 @@ class DiscoveryService:
             return
         self._stop_event.clear()
         self.ready_event.clear()
-        self._thread = threading.Thread(target=self._run, daemon=True, name="AutoSDDiscovery")
+        self._thread = threading.Thread(target=self._run, daemon=True, name="UltraProDiscovery")
         self._thread.start()
         self.ready_event.wait(2.0)
 
@@ -1010,7 +1010,7 @@ def discover_devices(
     cancel_event: threading.Event | None = None,
     exclude_local: bool = True,
 ) -> list[DiscoveredDevice]:
-    """Broadcast a probe and collect running AutoSD instances."""
+    """Broadcast a probe and collect running UltraPro instances."""
     cancel = cancel_event or threading.Event()
     addresses = list(targets or ("255.255.255.255", "127.0.0.1"))
     probe = _datagram("discover", sender_id=sender_id)
@@ -1276,7 +1276,7 @@ def create_upnp_mapping(
             "NewInternalPort": internal_port,
             "NewInternalClient": local_ip_address(),
             "NewEnabled": 1,
-            "NewPortMappingDescription": "AutoSD Internet Transfer",
+            "NewPortMappingDescription": "UltraPro Internet Transfer",
             "NewLeaseDuration": max(60, int(lease_seconds)),
         },
     )
@@ -1316,25 +1316,25 @@ NETWORK_TEXT = {
         "complete": "Terminé : {files} fichier(s), {size}",
         "cancelled": "Transfert annulé.",
         "error": "Erreur réseau : {message}",
-        "nearby_pcs": "PC à proximité avec AutoSD ouvert",
+        "nearby_pcs": "PC à proximité avec UltraPro ouvert",
         "refresh": "Rechercher",
-        "scanning": "Recherche des PC AutoSD sur le réseau…",
-        "no_devices": "Aucun autre PC AutoSD détecté.",
+        "scanning": "Recherche des PC UltraPro sur le réseau…",
+        "no_devices": "Aucun autre PC UltraPro détecté.",
         "device_ready": "Prêt à recevoir",
         "device_available": "Disponible",
         "select_device": "Sélectionne un PC détecté ou utilise la connexion manuelle.",
         "manual_connection": "Connexion manuelle (secours)",
         "requesting": "Demande d’autorisation envoyée à {name}…",
-        "incoming_title": "Demande de transfert AutoSD",
+        "incoming_title": "Demande de transfert UltraPro",
         "incoming_question": "{sender} veut t’envoyer {files} fichier(s), soit {size}.\n\nAccepter dans :\n{destination} ?",
         "refused": "Le transfert a été refusé sur l’autre PC.",
         "busy": "L’autre PC effectue déjà un transfert.",
         "discovery_error": "Découverte réseau indisponible : {message}",
         "internet": "Internet P2P",
-        "internet_intro": "Entre deux maisons : AutoSD cherche une connexion directe, puis utilise un relais sécurisé seulement si le réseau l’impose.",
+        "internet_intro": "Entre deux maisons : UltraPro cherche une connexion directe, puis utilise un relais sécurisé seulement si le réseau l’impose.",
         "rendezvous_service": "Service de connexion",
         "rendezvous_help": "Ce service échange seulement les informations de connexion. Les fichiers restent chiffrés de bout en bout.",
-        "missing_rendezvous": "Configure d’abord l’adresse du service de connexion AutoSD.",
+        "missing_rendezvous": "Configure d’abord l’adresse du service de connexion UltraPro.",
         "create_universal_code": "Recevoir : créer un code temporaire",
         "universal_code_share": "Code à partager",
         "paste_universal_code": "Code reçu",
@@ -1352,7 +1352,7 @@ NETWORK_TEXT = {
         "send_internet": "Envoyer par Internet",
         "upnp_mapping": "Ouverture automatique du routeur et création du canal TLS…",
         "invitation_ready": "Invitation prête pour {minutes} minutes. En attente de la connexion…",
-        "private_lan": "Les PC avec AutoSD ouvert apparaissent automatiquement sur ce réseau local privé.",
+        "private_lan": "Les PC avec UltraPro ouvert apparaissent automatiquement sur ce réseau local privé.",
     },
     "en": {
         "button": "PC transfer", "title": "Transfer between PCs", "send": "Send",
@@ -1367,23 +1367,23 @@ NETWORK_TEXT = {
         "hashing": "Checking {name}…", "progress": "{percent:.1f}% — {name} — {speed}/s",
         "file_received": "Received: {name}", "complete": "Complete: {files} file(s), {size}",
         "cancelled": "Transfer cancelled.", "error": "Network error: {message}",
-        "nearby_pcs": "Nearby PCs with AutoSD open", "refresh": "Scan",
-        "scanning": "Looking for AutoSD PCs on the network…",
-        "no_devices": "No other AutoSD PC was found.",
+        "nearby_pcs": "Nearby PCs with UltraPro open", "refresh": "Scan",
+        "scanning": "Looking for UltraPro PCs on the network…",
+        "no_devices": "No other UltraPro PC was found.",
         "device_ready": "Ready to receive", "device_available": "Available",
         "select_device": "Select a discovered PC or use the manual connection.",
         "manual_connection": "Manual connection (fallback)",
         "requesting": "Permission request sent to {name}…",
-        "incoming_title": "AutoSD transfer request",
+        "incoming_title": "UltraPro transfer request",
         "incoming_question": "{sender} wants to send {files} file(s), {size}.\n\nAccept into:\n{destination}?",
         "refused": "The transfer was refused on the other PC.",
         "busy": "The other PC is already transferring files.",
         "discovery_error": "Network discovery unavailable: {message}",
         "internet": "Internet P2P",
-        "internet_intro": "Between two homes: AutoSD tries a direct route first, then uses a secure relay only when required by the network.",
+        "internet_intro": "Between two homes: UltraPro tries a direct route first, then uses a secure relay only when required by the network.",
         "rendezvous_service": "Connection service",
         "rendezvous_help": "This service only exchanges connection details. Files remain end-to-end encrypted.",
-        "missing_rendezvous": "Configure the AutoSD connection service address first.",
+        "missing_rendezvous": "Configure the UltraPro connection service address first.",
         "create_universal_code": "Receive: create temporary code",
         "universal_code_share": "Code to share",
         "paste_universal_code": "Received code",
@@ -1400,7 +1400,7 @@ NETWORK_TEXT = {
         "send_internet": "Send over the Internet",
         "upnp_mapping": "Opening the router and creating the TLS channel…",
         "invitation_ready": "Invitation ready for {minutes} minutes. Waiting for connection…",
-        "private_lan": "PCs with AutoSD open appear automatically on this private local network.",
+        "private_lan": "PCs with UltraPro open appear automatically on this private local network.",
     },
 }
 

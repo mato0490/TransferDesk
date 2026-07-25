@@ -1,4 +1,4 @@
-# Environnements Python et caches
+﻿# Environnements Python et caches
 .venv/
 venv/
 __pycache__/
@@ -21,8 +21,8 @@ dist-*/
 *.app/
 
 # Configuration propre à une machine
-autosd-network.json
-!autosd-network.example.json
+ultrapro-network.json
+!ultrapro-network.example.json
 
 # Éditeurs et système
 .idea/

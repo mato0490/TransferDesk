@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import filecmp
 import hashlib
@@ -26,7 +26,7 @@ import themes_config as tc
 import translations as i18n
 import network_transfer as nt
 import webrtc_transfer as wt
-from autosd_version import __version__
+from ultrapro_version import __version__
 
 
 APP_TITLE = "File Manager"
@@ -197,10 +197,10 @@ def enable_windows_liquid_glass(root: tk.Tk) -> None:
 def application_data_dir() -> Path:
     """Return a writable per-user directory in source and frozen builds."""
     if sys.platform == "darwin":
-        return Path.home() / "Library" / "Application Support" / "AutoSDFileManager"
+        return Path.home() / "Library" / "Application Support" / "UltraProFileManager"
     base = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
     if base:
-        return Path(base) / "AutoSDFileManager"
+        return Path(base) / "UltraProFileManager"
     return Path.home() / ".auto_sd_file_manager"
 
 
@@ -1063,7 +1063,7 @@ class DuplicateEngine:
 
 # L'interface historique conserve ses définitions pour compatibilité avec les
 # anciens scripts, mais utilise les symboles du moteur extrait à l'exécution.
-from autosd_core import (
+from ultrapro_core import (
     ALL_EXTENSIONS,
     DuplicateEngine,
     DuplicateGroup,
@@ -1095,7 +1095,7 @@ from autosd_core import (
 )
 
 
-class AutoSDApp:
+class UltraProApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.geometry("1180x840")
@@ -3615,7 +3615,7 @@ class AutoSDApp:
 
 def main() -> None:
     if "--self-test-network" in sys.argv:
-        identity = nt.create_tls_identity("AutoSD packaged self-test")
+        identity = nt.create_tls_identity("UltraPro packaged self-test")
         try:
             invitation = nt.InternetInvitation(
                 host="127.0.0.1",
@@ -3638,7 +3638,7 @@ def main() -> None:
             identity.close()
         return
     root = tk.Tk()
-    AutoSDApp(root)
+    UltraProApp(root)
     root.mainloop()
 
 

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import os
@@ -22,9 +22,9 @@ except ImportError as exc:  # pragma: no cover - useful packaged/startup diagnos
 import network_transfer as nt
 import translations as i18n
 import webrtc_transfer as wt
-import autosd_updater as updater
-import autosd_core as core
-from autosd_version import __version__
+import ultrapro_updater as updater
+import ultrapro_core as core
+from ultrapro_version import __version__
 
 
 class WorkerSignals(QObject):
@@ -47,7 +47,7 @@ class Worker(QRunnable):
             self.signals.failed.emit(str(exc))
 
 
-class AutoSDBridge(QObject):
+class UltraProBridge(QObject):
     busyChanged = Signal()
     languageChanged = Signal()
     themeChanged = Signal()
@@ -113,7 +113,7 @@ class AutoSDBridge(QObject):
         self.discoveryEvent.connect(self._handle_discovery_event)
         self._discovery_service = nt.DiscoveryService(
             callback=self._queue_discovery_event,
-            device_name=os.environ.get("COMPUTERNAME", "AutoSD"),
+            device_name=os.environ.get("COMPUTERNAME", "UltraPro"),
             instance_id=self._device_code,
         )
         self._discovery_service.start()
@@ -901,7 +901,7 @@ class AutoSDBridge(QObject):
         self._set_manual_payload()
         self._reset_p2p_stats()
         self._set_p2p_state("generating")
-        receiver = wt.UniversalReceiver(target, url, os.environ.get("COMPUTERNAME", "AutoSD"), self._cancel, self._p2p_event)
+        receiver = wt.UniversalReceiver(target, url, os.environ.get("COMPUTERNAME", "UltraPro"), self._cancel, self._p2p_event)
         self._start(
             receiver.receive_once,
             done=lambda result: self._p2p_done(result, "receive", "P2P Internet", str(target)),
@@ -930,7 +930,7 @@ class AutoSDBridge(QObject):
         self._set_manual_payload()
         self._reset_p2p_stats()
         self._set_p2p_state("connecting")
-        sender = wt.UniversalSender(code, url, os.environ.get("COMPUTERNAME", "AutoSD"), self._cancel, self._p2p_event)
+        sender = wt.UniversalSender(code, url, os.environ.get("COMPUTERNAME", "UltraPro"), self._cancel, self._p2p_event)
         self._start(
             lambda: sender.send_files(paths),
             done=lambda result: self._p2p_done(result, "send", "; ".join(str(path) for path in paths), "P2P Internet"),
@@ -1206,7 +1206,7 @@ class AutoSDBridge(QObject):
 
         def failed(message: str) -> None:
             self._set_busy(False)
-            fallback = os.environ.get("AUTOSD_UPDATE_URL", "").strip() or updater.RELEASES_URL
+            fallback = os.environ.get("ULTRAPRO_UPDATE_URL", "").strip() or updater.RELEASES_URL
             self._set_update(
                 state="failed",
                 message=self.tr("update_check_failed", error=str(message).strip() or self.tr("unknown_error")),
@@ -1287,7 +1287,7 @@ class AutoSDBridge(QObject):
         url = self._update_download_url if self._update_download_url.startswith("http") else ""
         if self._update_release is not None:
             url = self._update_release.page_url
-        url = url or os.environ.get("AUTOSD_UPDATE_URL", "").strip() or updater.RELEASES_URL
+        url = url or os.environ.get("ULTRAPRO_UPDATE_URL", "").strip() or updater.RELEASES_URL
         try:
             webbrowser.open(url)
             self.notification.emit("info", self.tr("update_opened"))
@@ -1348,7 +1348,7 @@ class AutoSDBridge(QObject):
 
 def main() -> int:
     if "--self-test-network" in sys.argv:
-        identity = nt.create_tls_identity("AutoSD packaged self-test")
+        identity = nt.create_tls_identity("UltraPro packaged self-test")
         try:
             invitation = nt.InternetInvitation("127.0.0.1", 48722, "123456", identity.fingerprint,
                                                int(datetime.now().timestamp()) + 60, "Self-test")
@@ -1362,11 +1362,11 @@ def main() -> int:
         return 0
     os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "Basic")
     app = QGuiApplication(sys.argv)
-    app.setApplicationName("AutoSD File Manager")
+    app.setApplicationName("UltraPro File Manager")
     app.setApplicationVersion(__version__)
-    app.setOrganizationName("AutoSD")
+    app.setOrganizationName("UltraPro")
     engine = QQmlApplicationEngine()
-    bridge = AutoSDBridge()
+    bridge = UltraProBridge()
     app.aboutToQuit.connect(bridge.shutdown)
     engine.rootContext().setContextProperty("backend", bridge)
     qml = Path(__file__).with_name("qml") / "Main.qml"

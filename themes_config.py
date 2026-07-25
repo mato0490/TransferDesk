@@ -1,7 +1,7 @@
-"""Configuration centralisee des themes de l'application Auto SD.
+﻿"""Configuration centralisee des themes de l'application UltraPro.
 
 Ce module ne depend d'aucune bibliotheque externe. Les palettes sont utilisees
-par ``auto sd v5.py`` et les constantes historiques restent disponibles pour
+par ``legacy_file_manager.py`` et les constantes historiques restent disponibles pour
 les anciennes versions de l'application.
 """
 

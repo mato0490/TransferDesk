@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 
 LANGUAGE_NAMES = {"en": "English", "fr": "Français", "he": "עברית"}
@@ -487,14 +487,14 @@ HE.update({
 
 
 EN.update({
-    "app_name": "AutoSD File Manager",
+    "app_name": "UltraPro File Manager",
     "nav_p2p": "P2P transfers",
     "theme_light": "Light theme",
     "theme_dark": "Dark theme",
     "extension_placeholder": "jpg, png, mov — empty means all",
     "completion_hint": "Tab ↹  complete with “{value}”",
     "transfer_qt_subtitle": "Copy, organize and verify files without blocking the interface.",
-    "source_placeholder": "Folder or SD card",
+    "source_placeholder": "Folder or removable drive",
     "destination_placeholder": "Backup folder",
     "extensions": "Extensions",
     "conflicts": "Conflicts",
@@ -559,12 +559,12 @@ EN.update({
 })
 
 FR.update({
-    "app_name": "AutoSD File Manager", "nav_p2p": "Transferts P2P",
+    "app_name": "UltraPro File Manager", "nav_p2p": "Transferts P2P",
     "theme_light": "Thème clair", "theme_dark": "Thème sombre",
     "extension_placeholder": "jpg, png, mov — vide = toutes",
     "completion_hint": "Tab ↹  compléter avec « {value} »",
     "transfer_qt_subtitle": "Copiez, organisez et vérifiez vos fichiers sans bloquer l’interface.",
-    "source_placeholder": "Dossier ou carte SD", "destination_placeholder": "Dossier de sauvegarde",
+    "source_placeholder": "Dossier ou support amovible", "destination_placeholder": "Dossier de sauvegarde",
     "extensions": "Extensions", "conflicts": "Conflits", "period": "Période",
     "subfolder": "Sous-dossier", "create": "Créer", "eject_source": "Éjecter la source",
     "start": "Démarrer", "delete_sources_title": "Confirmer la suppression des sources",
@@ -602,12 +602,12 @@ FR.update({
 })
 
 HE.update({
-    "app_name": "מנהל הקבצים AutoSD", "nav_p2p": "העברות P2P",
+    "app_name": "מנהל הקבצים UltraPro", "nav_p2p": "העברות P2P",
     "theme_light": "ערכת נושא בהירה", "theme_dark": "ערכת נושא כהה",
     "extension_placeholder": "jpg, png, mov — ריק = הכול",
     "completion_hint": "Tab ↹  השלמה באמצעות „{value}”",
     "transfer_qt_subtitle": "העתקה, ארגון ואימות קבצים בלי לחסום את הממשק.",
-    "source_placeholder": "תיקייה או כרטיס SD", "destination_placeholder": "תיקיית גיבוי",
+    "source_placeholder": "תיקייה או כונן נשלף", "destination_placeholder": "תיקיית גיבוי",
     "extensions": "סיומות", "conflicts": "התנגשויות", "period": "תקופה",
     "subfolder": "תיקיית משנה", "create": "יצירה", "eject_source": "הוצאת המקור",
     "start": "התחלה", "delete_sources_title": "אישור מחיקת קובצי המקור",
@@ -651,7 +651,7 @@ EN.update({
     "discovery_error": "Network discovery error.",
     "device_ready_suffix": "ready",
     "devices_found_count": "{count} device(s) detected.",
-    "no_devices_found": "No other AutoSD device was detected.",
+    "no_devices_found": "No other UltraPro device was detected.",
     "select_device": "Select a detected device.",
     "choose_send_file": "Choose at least one file or folder to send.",
     "local_request_sent": "Transfer request sent to {name}…",
@@ -684,7 +684,7 @@ FR.update({
     "preview_required": "Construisez un aperçu avant de lancer le transfert.",
     "discovery_error": "Erreur de découverte réseau.", "device_ready_suffix": "prêt",
     "devices_found_count": "{count} appareil(s) détecté(s).",
-    "no_devices_found": "Aucun autre appareil AutoSD détecté.",
+    "no_devices_found": "Aucun autre appareil UltraPro détecté.",
     "select_device": "Sélectionnez un appareil détecté.",
     "choose_send_file": "Choisissez au moins un fichier ou dossier à envoyer.",
     "local_request_sent": "Demande de transfert envoyée à {name}…",
@@ -715,7 +715,7 @@ HE.update({
     "preview_required": "יש ליצור תצוגה מקדימה לפני תחילת ההעברה.",
     "discovery_error": "שגיאת גילוי רשת.", "device_ready_suffix": "מוכן",
     "devices_found_count": "זוהו {count} מכשירים.",
-    "no_devices_found": "לא זוהה מכשיר AutoSD נוסף.",
+    "no_devices_found": "לא זוהה מכשיר UltraPro נוסף.",
     "select_device": "יש לבחור מכשיר שזוהה.",
     "choose_send_file": "יש לבחור לפחות קובץ או תיקייה אחת לשליחה.",
     "local_request_sent": "בקשת העברה נשלחה אל {name}…",
@@ -850,7 +850,7 @@ EN.update({
     "help_p2p_title": "P2P transfer",
     "help_p2p_body": "The manual no-server workflow is first in the P2P tab. Create an offer on the sender, create an answer on the receiver, then import the answer on the sender. The progress block shows the current file, bytes, speed and completion state.",
     "help_update_title": "Updates",
-    "help_update_body": "Use the update button to check GitHub Releases. AutoSD asks before downloading and asks again before installing.",
+    "help_update_body": "Use the update button to check GitHub Releases. UltraPro asks before downloading and asks again before installing.",
     "check_updates": "Check for updates",
     "update_opened": "Update page opened.",
     "update_manual": "Installed version: {version}. No update page is configured.",
@@ -903,7 +903,7 @@ FR.update({
     "help_p2p_title": "Transfert P2P",
     "help_p2p_body": "Le mode manuel sans serveur est maintenant le premier dans l'onglet P2P. Creez une offre sur l'expediteur, creez une reponse sur le destinataire, puis importez la reponse sur l'expediteur. Le bloc de progression affiche le fichier courant, les octets, la vitesse et l'etat de fin.",
     "help_update_title": "Mises a jour",
-    "help_update_body": "Le bouton de mise a jour interroge GitHub Releases. AutoSD demande confirmation avant le telechargement puis avant l'installation.",
+    "help_update_body": "Le bouton de mise a jour interroge GitHub Releases. UltraPro demande confirmation avant le telechargement puis avant l'installation.",
     "check_updates": "Verifier les mises a jour",
     "update_opened": "Page de mise a jour ouverte.",
     "update_manual": "Version installee : {version}. Aucune page de mise a jour n'est configuree.",
@@ -956,7 +956,7 @@ HE.update({
     "help_p2p_title": "P2P transfer",
     "help_p2p_body": "The manual no-server workflow is first in the P2P tab. The progress block shows the current file, bytes, speed and completion state.",
     "help_update_title": "Updates",
-    "help_update_body": "Use the update button to check GitHub Releases. AutoSD asks before downloading and asks again before installing.",
+    "help_update_body": "Use the update button to check GitHub Releases. UltraPro asks before downloading and asks again before installing.",
     "check_updates": "Check for updates",
     "update_opened": "Update page opened.",
     "update_manual": "Installed version: {version}. No update page is configured.",

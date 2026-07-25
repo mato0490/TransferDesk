@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import hashlib
 import json
@@ -79,7 +79,7 @@ def current_platform_key() -> str:
 
 def expected_asset_name(version: str, platform_key: str | None = None) -> str:
     key = platform_key or current_platform_key()
-    return f"AutoSD-FileManager-{key}-v{version}.zip"
+    return f"UltraPro-FileManager-{key}-v{version}.zip"
 
 
 def fetch_latest_release(
@@ -208,7 +208,7 @@ def write_windows_updater_script(
     executable_name: str,
     relaunch: bool,
 ) -> Path:
-    script = Path(tempfile.gettempdir()) / f"autosd-updater-{int(time.time())}.ps1"
+    script = Path(tempfile.gettempdir()) / f"ultrapro-updater-{int(time.time())}.ps1"
     script.write_text(
         "\n".join(
             [
@@ -220,7 +220,7 @@ def write_windows_updater_script(
                 f"$ExeName = {powershell_quote(executable_name)}",
                 f"$Relaunch = ${str(bool(relaunch)).lower()}",
                 "try { Wait-Process -Id $PidToWait -Timeout 120 } catch { Start-Sleep -Seconds 3 }",
-                "$ExtractDir = Join-Path $env:TEMP ('autosd-install-' + [guid]::NewGuid())",
+                "$ExtractDir = Join-Path $env:TEMP ('ultrapro-install-' + [guid]::NewGuid())",
                 "New-Item -ItemType Directory -Path $ExtractDir | Out-Null",
                 "Expand-Archive -LiteralPath $Archive -DestinationPath $ExtractDir -Force",
                 "$Candidate = Get-ChildItem -LiteralPath $ExtractDir -Directory | Select-Object -First 1",
@@ -242,7 +242,7 @@ def powershell_quote(value: str) -> str:
 
 
 def _read_json(url: str) -> dict[str, Any]:
-    request = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "AutoSD-Updater"})
+    request = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json", "User-Agent": "UltraPro-Updater"})
     try:
         with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT) as response:
             return json.loads(response.read().decode("utf-8"))
@@ -251,7 +251,7 @@ def _read_json(url: str) -> dict[str, Any]:
 
 
 def _read_text(url: str) -> str:
-    request = urllib.request.Request(url, headers={"User-Agent": "AutoSD-Updater"})
+    request = urllib.request.Request(url, headers={"User-Agent": "UltraPro-Updater"})
     try:
         with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT) as response:
             return response.read().decode("utf-8")
@@ -265,7 +265,7 @@ def _download_file(
     expected_size: int,
     progress: Callable[[int, int], None] | None,
 ) -> None:
-    request = urllib.request.Request(url, headers={"User-Agent": "AutoSD-Updater"})
+    request = urllib.request.Request(url, headers={"User-Agent": "UltraPro-Updater"})
     try:
         with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT) as response, destination.open("wb") as output:
             total = int(response.headers.get("Content-Length") or expected_size or 0)

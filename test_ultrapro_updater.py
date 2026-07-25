@@ -1,8 +1,8 @@
-import tempfile
+﻿import tempfile
 import unittest
 from pathlib import Path
 
-import autosd_updater as updater
+import ultrapro_updater as updater
 
 
 def release_payload(version="8.0.1", prerelease=False, assets=None):
@@ -15,22 +15,22 @@ def release_payload(version="8.0.1", prerelease=False, assets=None):
         if assets is not None
         else [
             {
-                "name": f"AutoSD-FileManager-windows-v{version}.zip",
+                "name": f"UltraPro-FileManager-windows-v{version}.zip",
                 "browser_download_url": "https://example.test/windows.zip",
                 "size": 123,
             },
             {
-                "name": f"AutoSD-FileManager-windows-v{version}.zip.sha256",
+                "name": f"UltraPro-FileManager-windows-v{version}.zip.sha256",
                 "browser_download_url": "https://example.test/windows.zip.sha256",
                 "size": 80,
             },
             {
-                "name": f"AutoSD-FileManager-macos-v{version}.zip",
+                "name": f"UltraPro-FileManager-macos-v{version}.zip",
                 "browser_download_url": "https://example.test/macos.zip",
                 "size": 456,
             },
             {
-                "name": f"AutoSD-FileManager-macos-v{version}.zip.sha256",
+                "name": f"UltraPro-FileManager-macos-v{version}.zip.sha256",
                 "browser_download_url": "https://example.test/macos.zip.sha256",
                 "size": 80,
             },
@@ -54,8 +54,8 @@ class UpdaterTests(unittest.TestCase):
 
         self.assertIsNotNone(release)
         self.assertEqual(release.version, "8.0.1")
-        self.assertEqual(release.asset.name, "AutoSD-FileManager-windows-v8.0.1.zip")
-        self.assertEqual(release.checksum_asset.name, "AutoSD-FileManager-windows-v8.0.1.zip.sha256")
+        self.assertEqual(release.asset.name, "UltraPro-FileManager-windows-v8.0.1.zip")
+        self.assertEqual(release.checksum_asset.name, "UltraPro-FileManager-windows-v8.0.1.zip.sha256")
 
     def test_fetch_latest_release_ignores_prereleases_and_current_version(self):
         self.assertIsNone(
@@ -84,7 +84,7 @@ class UpdaterTests(unittest.TestCase):
     def test_parse_sha256_accepts_matching_filename(self):
         digest = "a" * 64
         self.assertEqual(
-            updater.parse_sha256(f"{digest}  AutoSD-FileManager-windows-v8.0.1.zip", "AutoSD-FileManager-windows-v8.0.1.zip"),
+            updater.parse_sha256(f"{digest}  UltraPro-FileManager-windows-v8.0.1.zip", "UltraPro-FileManager-windows-v8.0.1.zip"),
             digest,
         )
 

@@ -1,8 +1,8 @@
-# -*- mode: python ; coding: utf-8 -*-
+﻿# -*- mode: python ; coding: utf-8 -*-
 
 import sys
 
-from autosd_version import __version__
+from ultrapro_version import __version__
 
 
 windows_version_info = None
@@ -25,12 +25,12 @@ if sys.platform == 'win32':
         kids=[
             versioninfo.StringFileInfo([
                 versioninfo.StringTable('040904B0', [
-                    versioninfo.StringStruct('CompanyName', 'AutoSD'),
-                    versioninfo.StringStruct('FileDescription', 'AutoSD File Manager'),
+                    versioninfo.StringStruct('CompanyName', 'UltraPro'),
+                    versioninfo.StringStruct('FileDescription', 'UltraPro File Manager'),
                     versioninfo.StringStruct('FileVersion', __version__),
-                    versioninfo.StringStruct('InternalName', 'AutoSD-FileManager'),
-                    versioninfo.StringStruct('OriginalFilename', 'AutoSD-FileManager.exe'),
-                    versioninfo.StringStruct('ProductName', 'AutoSD File Manager'),
+                    versioninfo.StringStruct('InternalName', 'UltraPro-FileManager'),
+                    versioninfo.StringStruct('OriginalFilename', 'UltraPro-FileManager.exe'),
+                    versioninfo.StringStruct('ProductName', 'UltraPro File Manager'),
                     versioninfo.StringStruct('ProductVersion', __version__),
                 ]),
             ]),
@@ -42,13 +42,13 @@ if sys.platform == 'win32':
 
 
 a = Analysis(
-    ['autosd_qt.py'],
+    ['ultrapro_qt.py'],
     pathex=[],
     binaries=[],
     datas=[('qml', 'qml')],
     hiddenimports=[
         'filecmp', 'plistlib', 'queue', 'shutil', 'subprocess', 'tempfile',
-        'PIL.Image', 'autosd_core', 'autosd_updater',
+        'PIL.Image', 'ultrapro_core', 'ultrapro_updater',
         'PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtQuickControls2',
     ],
     hookspath=['pyinstaller_hooks'],
@@ -64,24 +64,24 @@ if sys.platform == 'darwin':
     exe = EXE(
         pyz, a.scripts, [],
         exclude_binaries=True,
-        name='AutoSD-FileManager', debug=False, strip=False, upx=True,
+        name='UltraPro-FileManager', debug=False, strip=False, upx=True,
         console=False, argv_emulation=False, target_arch=None,
         codesign_identity=None, entitlements_file=None,
     )
     bundle = COLLECT(
         exe, a.binaries, a.datas,
         strip=False, upx=True, upx_exclude=[],
-        name='AutoSD-FileManager',
+        name='UltraPro-FileManager',
     )
     app = BUNDLE(
         bundle,
-        name='AutoSD File Manager.app',
-        icon='assets/autosd-icon.png',
-        bundle_identifier='com.autosd.filemanager',
+        name='UltraPro File Manager.app',
+        icon='assets/ultrapro-icon.png',
+        bundle_identifier='com.ultrapro.filemanager',
         version=__version__,
         info_plist={
-            'CFBundleDisplayName': 'AutoSD File Manager',
-            'CFBundleName': 'AutoSD File Manager',
+            'CFBundleDisplayName': 'UltraPro File Manager',
+            'CFBundleName': 'UltraPro File Manager',
             'CFBundleShortVersionString': __version__,
             'CFBundleVersion': __version__,
             'NSPrincipalClass': 'NSApplication',
@@ -92,14 +92,14 @@ else:
     exe = EXE(
         pyz, a.scripts, [],
         exclude_binaries=True,
-        name='AutoSD-FileManager', debug=False,
+        name='UltraPro-FileManager', debug=False,
         bootloader_ignore_signals=False, strip=False, upx=True,
         upx_exclude=[], console=False, disable_windowed_traceback=False,
         version=windows_version_info,
-        icon='assets/autosd-icon.png',
+        icon='assets/ultrapro-icon.png',
     )
     bundle = COLLECT(
         exe, a.binaries, a.datas,
         strip=False, upx=True, upx_exclude=[],
-        name='AutoSD-FileManager',
+        name='UltraPro-FileManager',
     )

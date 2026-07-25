@@ -1,7 +1,7 @@
-# AutoSD File Manager
+﻿# UltraPro File Manager
 
-AutoSD File Manager est une application Windows et macOS pour copier, trier,
-transférer et vérifier des fichiers. Elle sert notamment à vider une carte SD,
+UltraPro File Manager est une application Windows et macOS pour copier, trier,
+transférer et vérifier des fichiers. Elle sert notamment à vider une support amovible,
 organiser des fichiers, trouver des doublons exacts et envoyer des fichiers
 entre deux ordinateurs.
 
@@ -17,18 +17,18 @@ Téléchargez le fichier correspondant à votre système :
 
 | Système | Fichier à télécharger |
 | --- | --- |
-| Windows | `AutoSD-FileManager-windows-vX.Y.Z.zip` |
-| macOS | `AutoSD-FileManager-macos-vX.Y.Z.zip` |
+| Windows | `UltraPro-FileManager-windows-vX.Y.Z.zip` |
+| macOS | `UltraPro-FileManager-macos-vX.Y.Z.zip` |
 
 Les fichiers `.sha256` servent à vérifier l'intégrité du téléchargement. Ils
 sont aussi utilisés automatiquement par le système de mise à jour intégré.
 
 ## Installation Sur Windows
 
-1. Téléchargez `AutoSD-FileManager-windows-vX.Y.Z.zip` depuis la page Releases.
+1. Téléchargez `UltraPro-FileManager-windows-vX.Y.Z.zip` depuis la page Releases.
 2. Décompressez le fichier `.zip`.
-3. Ouvrez le dossier `AutoSD-FileManager`.
-4. Lancez `AutoSD-FileManager.exe`.
+3. Ouvrez le dossier `UltraPro-FileManager`.
+4. Lancez `UltraPro-FileManager.exe`.
 
 Si Windows affiche un avertissement SmartScreen, choisissez **Informations
 complémentaires**, puis **Exécuter quand même** si vous faites confiance à la
@@ -36,14 +36,14 @@ version téléchargée depuis ce dépôt.
 
 ## Installation Sur macOS
 
-1. Téléchargez `AutoSD-FileManager-macos-vX.Y.Z.zip` depuis la page Releases.
+1. Téléchargez `UltraPro-FileManager-macos-vX.Y.Z.zip` depuis la page Releases.
 2. Décompressez le fichier `.zip`.
-3. Déplacez `AutoSD File Manager.app` dans le dossier **Applications**.
+3. Déplacez `UltraPro File Manager.app` dans le dossier **Applications**.
 4. Ouvrez l'application.
 
 Si macOS bloque l'ouverture parce que l'app n'est pas notarisée, ouvrez
 **Réglages système > Confidentialité et sécurité**, puis choisissez
-**Ouvrir quand même** pour AutoSD File Manager.
+**Ouvrir quand même** pour UltraPro File Manager.
 
 ## Mise À Jour
 
@@ -54,11 +54,11 @@ Dans l'application :
 3. Si une nouvelle version existe, confirmez le téléchargement.
 4. Après vérification SHA-256, confirmez l'installation.
 
-AutoSD ne télécharge jamais une mise à jour sans confirmation et ne l'installe
+UltraPro ne télécharge jamais une mise à jour sans confirmation et ne l'installe
 jamais sans une deuxième confirmation.
 
 Sur Windows, une version empaquetée peut se remplacer automatiquement après
-fermeture de l'application. Sur macOS, AutoSD ouvre l'archive vérifiée pour que
+fermeture de l'application. Sur macOS, UltraPro ouvre l'archive vérifiée pour que
 vous terminiez l'installation.
 
 ## Utilisation Rapide
@@ -69,7 +69,7 @@ vous terminiez l'installation.
   uniquement les doublons vérifiés.
 - **Historique** : consultez les opérations récentes et exportez un rapport.
 - **P2P / réseau local** : utilisez l'onglet P2P pour envoyer des fichiers à un
-  autre ordinateur AutoSD.
+  autre ordinateur UltraPro.
 - **Aide** : vérifiez la version installée, le code de ce PC et les mises à jour.
 
 ## Configuration Réseau Optionnelle
@@ -77,8 +77,8 @@ vous terminiez l'installation.
 Les transferts locaux fonctionnent sans configuration si les deux ordinateurs
 sont sur le même réseau.
 
-Pour le transfert Internet par code, AutoSD peut utiliser un service de
-rendez-vous compatible. Créez `autosd-network.json` à la racine de l'application
+Pour le transfert Internet par code, UltraPro peut utiliser un service de
+rendez-vous compatible. Créez `ultrapro-network.json` à la racine de l'application
 ou du projet :
 
 ```json
@@ -87,7 +87,7 @@ ou du projet :
 }
 ```
 
-Vous pouvez aussi définir la variable d'environnement `AUTOSD_RENDEZVOUS_URL`.
+Vous pouvez aussi définir la variable d'environnement `ULTRAPRO_RENDEZVOUS_URL`.
 Sans cette configuration, les modes locaux et manuels restent utilisables.
 
 ## Compiler Depuis Le Code Source
@@ -102,13 +102,13 @@ py -m venv .venv
 py -m pip install --upgrade pip
 py -m pip install -r requirements-build.txt
 py -m unittest discover -v
-py -m PyInstaller --noconfirm --clean AutoSD-FileManager.spec
+py -m PyInstaller --noconfirm --clean UltraPro-FileManager.spec
 ```
 
 Le paquet est créé dans :
 
 ```text
-dist\AutoSD-FileManager
+dist\UltraPro-FileManager
 ```
 
 ### macOS
@@ -119,13 +119,13 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements-build.txt
 python -m unittest discover -v
-python -m PyInstaller --noconfirm --clean AutoSD-FileManager.spec
+python -m PyInstaller --noconfirm --clean UltraPro-FileManager.spec
 ```
 
 L'application est créée dans :
 
 ```text
-dist/AutoSD File Manager.app
+dist/UltraPro File Manager.app
 ```
 
 Pour les détails de signature macOS, voir [BUILD-MACOS.md](BUILD-MACOS.md).
@@ -137,7 +137,7 @@ py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 py -m pip install --upgrade pip
 py -m pip install -r requirements.txt
-py autosd_qt.py
+py ultrapro_qt.py
 ```
 
 Tests :
@@ -149,12 +149,12 @@ py -m unittest discover -v
 Auto-test réseau d'un paquet Windows :
 
 ```powershell
-.\dist\AutoSD-FileManager\AutoSD-FileManager.exe --self-test-network
+.\dist\UltraPro-FileManager\UltraPro-FileManager.exe --self-test-network
 ```
 
 ## Publier Une Nouvelle Version
 
-La version de l'application est définie dans `autosd_version.py`.
+La version de l'application est définie dans `ultrapro_version.py`.
 
 Après avoir mis à jour la version et validé les tests, poussez un tag :
 

@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import os
 import tempfile
 import threading
@@ -29,7 +29,7 @@ class ConnectionCodeTests(unittest.TestCase):
     def test_service_url_can_be_loaded_from_environment(self) -> None:
         with mock.patch.dict(
             os.environ,
-            {"AUTOSD_RENDEZVOUS_URL": "https://connect.example.test/"},
+            {"ULTRAPRO_RENDEZVOUS_URL": "https://connect.example.test/"},
         ):
             self.assertEqual(
                 webtransfer.default_rendezvous_url(),
@@ -49,7 +49,7 @@ class ConnectionCodeTests(unittest.TestCase):
     def test_service_url_can_be_loaded_from_local_configuration(self) -> None:
         with tempfile.TemporaryDirectory() as root:
             folder = Path(root)
-            (folder / "autosd-network.json").write_text(
+            (folder / "ultrapro-network.json").write_text(
                 '{"rendezvous_url":"https://local.example.test"}', encoding="utf-8"
             )
             with mock.patch.dict(os.environ, {}, clear=True), mock.patch.object(
@@ -203,7 +203,7 @@ class WebRTCDataChannelTests(unittest.TestCase):
             def on_datachannel(channel) -> None:
                 receiver_channel.set_result(channel)
 
-            channel = sender_pc.createDataChannel("autosd-test", ordered=True)
+            channel = sender_pc.createDataChannel("ultrapro-test", ordered=True)
             try:
                 offer = await asyncio.wait_for(
                     sender_pc.createOffer(), self.SIGNALING_TIMEOUT

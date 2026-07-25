@@ -1,4 +1,4 @@
-# Recette avant livraison
+﻿# Recette avant livraison
 
 Cette checklist complète les tests automatisés. Elle doit être exécutée sur les
 machines et réseaux réellement visés avant de publier une version. Conserver les
@@ -18,8 +18,8 @@ résultats, les journaux utiles et les numéros de version avec la livraison.
 - [ ] la CI est verte pour les tests Python Windows et macOS ;
 - [ ] les paquets Windows et macOS sont construits sans erreur ;
 - [ ] le tag `vX.Y.Z` a créé une GitHub Release contenant les deux archives
-  `AutoSD-FileManager-*-vX.Y.Z.zip` et leurs fichiers `.sha256` ;
-- [ ] `AutoSD-FileManager.exe --self-test-network` réussit ;
+  `UltraPro-FileManager-*-vX.Y.Z.zip` et leurs fichiers `.sha256` ;
+- [ ] `UltraPro-FileManager.exe --self-test-network` réussit ;
 - [ ] `codesign --verify --deep --strict` réussit sur le paquet macOS ;
 - [ ] l'auto-test réseau du binaire contenu dans le paquet macOS réussit.
 

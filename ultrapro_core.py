@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import filecmp
 import hashlib
@@ -160,10 +160,10 @@ EventCallback = Callable[[str, dict], None]
 def application_data_dir() -> Path:
     """Return a writable per-user directory in source and frozen builds."""
     if sys.platform == "darwin":
-        return Path.home() / "Library" / "Application Support" / "AutoSDFileManager"
+        return Path.home() / "Library" / "Application Support" / "UltraProFileManager"
     base = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
     if base:
-        return Path(base) / "AutoSDFileManager"
+        return Path(base) / "UltraProFileManager"
     return Path.home() / ".auto_sd_file_manager"
 
 
