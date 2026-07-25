@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 
-REPOSITORY = "mato0490/ultra-pro-files-manager"
+REPOSITORY = "mato0490/transferdesk"
 API_URL = f"https://api.github.com/repos/{REPOSITORY}/releases/latest"
 RELEASES_URL = f"https://github.com/{REPOSITORY}/releases"
 REQUEST_TIMEOUT = 20

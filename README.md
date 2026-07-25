@@ -11,7 +11,7 @@ entre deux ordinateurs.
 
 Les versions prêtes à utiliser sont publiées sur GitHub Releases :
 
-<https://github.com/mato0490/ultra-pro-files-manager/releases>
+<https://github.com/mato0490/transferdesk/releases>
 
 Téléchargez le fichier correspondant à votre système :
 

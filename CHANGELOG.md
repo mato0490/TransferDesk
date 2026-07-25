@@ -11,6 +11,8 @@ d'une livraison.
 - renommage public du projet en TransferDesk, avec suppression des
   références utilisateur à l'ancien nom et aux cartes mémoire spécialisées dans
   l'interface, les paquets, la CI et la documentation ;
+- préparation du nouveau slug GitHub `mato0490/transferdesk` pour les liens
+  publics et le vérificateur de mises à jour ;
 - refonte de `README.md` en guide utilisateur centré sur le téléchargement,
   l'installation Windows/macOS, les mises à jour et la compilation ;
 - ajout d'un onglet Aide affichant la version installée, le code persistant du

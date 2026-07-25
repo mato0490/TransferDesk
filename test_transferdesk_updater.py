@@ -8,7 +8,7 @@ import transferdesk_updater as updater
 def release_payload(version="8.0.1", prerelease=False, assets=None):
     return {
         "tag_name": f"v{version}",
-        "html_url": f"https://github.com/mato0490/ultra-pro-files-manager/releases/tag/v{version}",
+        "html_url": f"https://github.com/mato0490/transferdesk/releases/tag/v{version}",
         "draft": False,
         "prerelease": prerelease,
         "assets": assets
