@@ -1,13 +1,11 @@
 ﻿# TransferDesk
 
 TransferDesk est une application Windows et macOS pour copier, trier,
-transférer et vérifier des fichiers. Elle sert notamment à vider une support amovible,
+transférer et vérifier des fichiers. Elle sert notamment à vider un support amovible,
 organiser des fichiers, trouver des doublons exacts et envoyer des fichiers
 entre deux ordinateurs.
 
-> Dernière mise à jour de la documentation : 26 juillet 2026.
-
-## Télécharger L'application
+## Télécharger l'application
 
 Les versions prêtes à utiliser sont publiées sur GitHub Releases :
 
@@ -23,7 +21,7 @@ Téléchargez le fichier correspondant à votre système :
 Les fichiers `.sha256` servent à vérifier l'intégrité du téléchargement. Ils
 sont aussi utilisés automatiquement par le système de mise à jour intégré.
 
-## Installation Sur Windows
+## Installation sur Windows
 
 1. Téléchargez `TransferDesk-windows-vX.Y.Z.zip` depuis la page Releases.
 2. Décompressez le fichier `.zip`.
@@ -34,7 +32,7 @@ Si Windows affiche un avertissement SmartScreen, choisissez **Informations
 complémentaires**, puis **Exécuter quand même** si vous faites confiance à la
 version téléchargée depuis ce dépôt.
 
-## Installation Sur macOS
+## Installation sur macOS
 
 1. Téléchargez `TransferDesk-macos-vX.Y.Z.zip` depuis la page Releases.
 2. Décompressez le fichier `.zip`.
@@ -45,7 +43,7 @@ Si macOS bloque l'ouverture parce que l'app n'est pas notarisée, ouvrez
 **Réglages système > Confidentialité et sécurité**, puis choisissez
 **Ouvrir quand même** pour TransferDesk.
 
-## Mise À Jour
+## Mettre à jour
 
 Dans l'application :
 
@@ -54,14 +52,14 @@ Dans l'application :
 3. Si une nouvelle version existe, confirmez le téléchargement.
 4. Après vérification SHA-256, confirmez l'installation.
 
-TransferDesk ne télécharge jamais une mise à jour sans confirmation et ne l'installe
-jamais sans une deuxième confirmation.
+TransferDesk ne télécharge jamais une mise à jour sans confirmation et ne
+l'installe jamais sans une deuxième confirmation.
 
 Sur Windows, une version empaquetée peut se remplacer automatiquement après
-fermeture de l'application. Sur macOS, TransferDesk ouvre l'archive vérifiée pour que
-vous terminiez l'installation.
+fermeture de l'application. Sur macOS, TransferDesk ouvre l'archive vérifiée
+pour que vous terminiez l'installation.
 
-## Utilisation Rapide
+## Utilisation rapide
 
 - **Transfert de fichiers** : choisissez une source, une destination, puis
   lancez l'aperçu ou le transfert.
@@ -72,7 +70,7 @@ vous terminiez l'installation.
   autre ordinateur TransferDesk.
 - **Aide** : vérifiez la version installée, le code de ce PC et les mises à jour.
 
-## Configuration Réseau Optionnelle
+## Configuration réseau optionnelle
 
 Les transferts locaux fonctionnent sans configuration si les deux ordinateurs
 sont sur le même réseau.
@@ -90,7 +88,7 @@ ou du projet :
 Vous pouvez aussi définir la variable d'environnement `TRANSFERDESK_RENDEZVOUS_URL`.
 Sans cette configuration, les modes locaux et manuels restent utilisables.
 
-## Compiler Depuis Le Code Source
+## Compiler depuis le code source
 
 Prérequis : Python 3.12 ou 3.13.
 
@@ -130,7 +128,7 @@ dist/TransferDesk.app
 
 Pour les détails de signature macOS, voir [BUILD-MACOS.md](BUILD-MACOS.md).
 
-## Lancer En Mode Développement
+## Lancer en mode développement
 
 ```powershell
 py -m venv .venv
@@ -152,7 +150,7 @@ Auto-test réseau d'un paquet Windows :
 .\dist\TransferDesk\TransferDesk.exe --self-test-network
 ```
 
-## Publier Une Nouvelle Version
+## Publier une nouvelle version
 
 La version de l'application est définie dans `transferdesk_version.py`.
 
@@ -166,7 +164,7 @@ git push origin vX.Y.Z
 GitHub Actions construit alors automatiquement les paquets Windows et macOS,
 crée les fichiers `.sha256`, puis publie la GitHub Release.
 
-## Documents Utiles
+## Liens utiles
 
 - [BUILD-MACOS.md](BUILD-MACOS.md) : construction, signature et validation macOS.
 - [RELEASE-CHECKLIST.md](RELEASE-CHECKLIST.md) : recette avant livraison.

@@ -54,6 +54,8 @@ d'une livraison.
 
 ### Corrections
 
+- correction du README pour retirer la mention de date documentaire, lisser les
+  titres et corriger la présentation du support amovible ;
 - priorisation du mode P2P manuel sans serveur en haut de l'onglet P2P ;
 - correction du bouton Effacer du P2P manuel, qui nettoie maintenant la saisie,
   les fichiers, le dossier, le code et la sortie générée quand aucun transfert
