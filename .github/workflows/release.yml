@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONUNBUFFERED: "1"
+  QT_QPA_PLATFORM: offscreen
+
+jobs:
+  package:
+    name: Build release asset (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+          - os: macos-latest
+            platform: macos
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install packaging dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements-build.txt
+      - name: Build application
+        run: python -m PyInstaller --noconfirm --clean AutoSD-FileManager.spec
+      - name: Verify packaged network components (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath ".\dist\AutoSD-FileManager\AutoSD-FileManager.exe" -ArgumentList "--self-test-network" -Wait -PassThru
+          if ($process.ExitCode -ne 0) {
+            throw "Packaged network self-test failed with exit code $($process.ExitCode)."
+          }
+      - name: Sign and verify application bundle (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          codesign --force --deep --sign - "dist/AutoSD File Manager.app"
+          codesign --verify --deep --strict --verbose=2 "dist/AutoSD File Manager.app"
+          "dist/AutoSD File Manager.app/Contents/MacOS/AutoSD-FileManager" --self-test-network
+      - name: Package asset (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $version = "${env:GITHUB_REF_NAME}".TrimStart("v")
+          $asset = "AutoSD-FileManager-windows-v$version.zip"
+          Compress-Archive -Path ".\dist\AutoSD-FileManager" -DestinationPath $asset -Force
+          (Get-FileHash -Algorithm SHA256 $asset).Hash.ToLower() + "  $asset" | Set-Content -Encoding ascii "$asset.sha256"
+      - name: Package asset (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          asset="AutoSD-FileManager-macos-v${version}.zip"
+          ditto -c -k --sequesterRsrc --keepParent "dist/AutoSD File Manager.app" "$asset"
+          shasum -a 256 "$asset" | awk '{print $1 "  " $2}' > "$asset.sha256"
+      - name: Upload asset artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: autosd-${{ matrix.platform }}-release-asset
+          path: |
+            AutoSD-FileManager-${{ matrix.platform }}-v*.zip
+            AutoSD-FileManager-${{ matrix.platform }}-v*.zip.sha256
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs:
+      - package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" release-assets/* --clobber
+          else
+            gh release create "$tag" release-assets/* --title "$tag" --generate-notes
+          fi

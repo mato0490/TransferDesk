@@ -331,6 +331,73 @@ class QtBridgeTests(unittest.TestCase):
         self.assertEqual(spy.count(), 1)
         self.assertFalse(self.bridge.busy)
 
+    def test_update_check_exposes_available_release(self):
+        release = autosd_qt.updater.UpdateRelease(
+            version="8.0.1",
+            tag="v8.0.1",
+            page_url="https://example.test/release",
+            body="",
+            asset=autosd_qt.updater.ReleaseAsset("AutoSD-FileManager-windows-v8.0.1.zip", "https://example.test/app.zip", 1024),
+            checksum_asset=autosd_qt.updater.ReleaseAsset("AutoSD-FileManager-windows-v8.0.1.zip.sha256", "https://example.test/app.zip.sha256", 80),
+        )
+        with mock.patch.object(
+            self.bridge,
+            "_start",
+            side_effect=lambda operation, done=None, failed=None: done(release),
+        ):
+            self.bridge.checkForUpdates()
+
+        self.assertEqual(self.bridge.updateState, "available")
+        self.assertEqual(self.bridge.updateVersion, "8.0.1")
+        self.assertIn("8.0.1", self.bridge.updateMessage)
+        self.assertEqual(self.bridge.updateDownloadUrl, "https://example.test/app.zip")
+
+    def test_update_check_exposes_up_to_date(self):
+        with mock.patch.object(
+            self.bridge,
+            "_start",
+            side_effect=lambda operation, done=None, failed=None: done(None),
+        ):
+            self.bridge.checkForUpdates()
+
+        self.assertEqual(self.bridge.updateState, "up-to-date")
+        self.assertIn(self.bridge.appVersion, self.bridge.updateMessage)
+
+    def test_update_download_requires_available_release(self):
+        spy = QSignalSpy(self.bridge.notification)
+        self.bridge.downloadUpdate()
+
+        self.assertEqual(spy.count(), 1)
+        self.assertEqual(self.bridge.updateState, "idle")
+
+    def test_update_download_progress_and_ready_state(self):
+        release = autosd_qt.updater.UpdateRelease(
+            version="8.0.1",
+            tag="v8.0.1",
+            page_url="https://example.test/release",
+            body="",
+            asset=autosd_qt.updater.ReleaseAsset("AutoSD-FileManager-windows-v8.0.1.zip", "https://example.test/app.zip", 100),
+            checksum_asset=autosd_qt.updater.ReleaseAsset("AutoSD-FileManager-windows-v8.0.1.zip.sha256", "https://example.test/app.zip.sha256", 80),
+        )
+        downloaded = autosd_qt.updater.DownloadedUpdate(release, Path("C:/tmp/app.zip"), "a" * 64)
+        self.bridge._update_release = release
+
+        with mock.patch.object(
+            autosd_qt.updater,
+            "download_update",
+            side_effect=lambda release, destination, progress=None: (
+                progress(50, 100),
+                downloaded,
+            )[1],
+        ):
+            self.bridge.downloadUpdate()
+            self.bridge._pool.waitForDone(5000)
+            self.app.processEvents()
+
+        self.assertEqual(self.bridge.updateState, "ready")
+        self.assertEqual(self.bridge.updateProgress, 1.0)
+        self.assertIs(self.bridge._downloaded_update, downloaded)
+
     def test_local_request_can_be_rejected(self):
         self.bridge._pending_local_requests.add("request-1")
         with mock.patch.object(

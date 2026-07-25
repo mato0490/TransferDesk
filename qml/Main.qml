@@ -674,7 +674,58 @@ ApplicationWindow {
         Label { text: t("help_p2p_body"); color: muted; wrapMode: Text.Wrap; Layout.fillWidth: true }
         Label { text: t("help_update_title"); color: ink; font.pixelSize: 16; font.weight: Font.DemiBold }
         Label { text: t("help_update_body"); color: muted; wrapMode: Text.Wrap; Layout.fillWidth: true }
-        PillButton { text: t("check_updates"); highlighted: true; onClicked: backend.checkForUpdates() }
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: backend.updateState === "downloading" ? 118 : 92
+            radius: 12
+            color: dark ? "#55313d58" : "#99ffffff"
+            border.color: separator
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 8
+                Label {
+                    Layout.fillWidth: true
+                    text: backend.updateMessage.length > 0 ? backend.updateMessage : t("update_idle")
+                    color: ink
+                    wrapMode: Text.Wrap
+                }
+                ProgressBar {
+                    visible: backend.updateState === "downloading"
+                    Layout.fillWidth: true
+                    value: backend.updateProgress
+                }
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 8
+                    PillButton {
+                        text: t("check_updates")
+                        enabled: !backend.busy && backend.updateState !== "downloading"
+                        highlighted: true
+                        onClicked: backend.checkForUpdates()
+                    }
+                    PillButton {
+                        text: t("download_update")
+                        visible: backend.updateState === "available"
+                        enabled: !backend.busy
+                        onClicked: updateDownloadDialog.open()
+                    }
+                    PillButton {
+                        text: t("install_update")
+                        visible: backend.updateState === "ready"
+                        enabled: !backend.busy
+                        highlighted: true
+                        onClicked: updateInstallDialog.open()
+                    }
+                    PillButton {
+                        text: t("open_update_page")
+                        visible: backend.updateState === "available" || backend.updateState === "failed" || backend.updateState === "ready"
+                        onClicked: backend.openUpdatePage()
+                    }
+                    Item { Layout.fillWidth: true }
+                }
+            }
+        }
         Item { Layout.fillHeight: true }
     }
 
@@ -733,6 +784,36 @@ ApplicationWindow {
                     toast.open()
                 }
             }
+        }
+    }
+    Dialog {
+        id: updateDownloadDialog
+        modal: true
+        width: Math.min(window.width - 80, 520)
+        anchors.centerIn: parent
+        title: t("download_update")
+        standardButtons: Dialog.Cancel | Dialog.Ok
+        onOpened: backend.confirmDownloadUpdate()
+        onAccepted: backend.downloadUpdate()
+        contentItem: Label {
+            text: tf("update_download_question", {version: backend.updateVersion})
+            color: ink
+            wrapMode: Text.Wrap
+        }
+    }
+    Dialog {
+        id: updateInstallDialog
+        modal: true
+        width: Math.min(window.width - 80, 560)
+        anchors.centerIn: parent
+        title: t("install_update")
+        standardButtons: Dialog.Cancel | Dialog.Ok
+        onOpened: backend.confirmInstallUpdate()
+        onAccepted: backend.installDownloadedUpdate()
+        contentItem: Label {
+            text: t("update_install_question")
+            color: ink
+            wrapMode: Text.Wrap
         }
     }
     Dialog {

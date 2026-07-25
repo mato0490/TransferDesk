@@ -33,6 +33,14 @@ Un hook QML propre au projet n'embarque que Qt Quick, Controls, Layouts et
 Dialogs, ce qui exclut notamment WebEngine et les modules 3D inutilisés.
 PyInstaller convertit `assets/autosd-icon.png` en icône du paquet macOS.
 
+## Archive de publication
+
+Lorsqu'un tag `vX.Y.Z` est pousse sur GitHub, le workflow Release reconstruit
+l'application macOS, applique la signature ad hoc de validation, puis publie
+`AutoSD-FileManager-macos-vX.Y.Z.zip` et son fichier
+`AutoSD-FileManager-macos-vX.Y.Z.zip.sha256` dans GitHub Releases. Cette archive
+est le format attendu par le verificateur de mises a jour de l'application.
+
 ## Signature locale de test
 
 ```bash

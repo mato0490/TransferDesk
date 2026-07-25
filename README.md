@@ -28,8 +28,9 @@ transfers, and Internet P2P transfers.
   receiver reconnect continuously until success or cancellation;
 - detailed P2P progress, visible completion status, and P2P/local network
   transfers recorded in history;
-- Help tab with installed version, persistent PC code, and update page access
-  through `AUTOSD_UPDATE_URL`;
+- Help tab with installed version, persistent PC code, GitHub Releases update
+  checks, explicit download/install confirmations, and `AUTOSD_UPDATE_URL` as a
+  manual fallback page;
 - light and dark interface, available in French, English, and Hebrew with
   right-to-left layout support;
 - adaptive window for small displays and high Windows scaling, with scrolling on
@@ -69,8 +70,9 @@ Quick network self-test for a packaged build:
 ```
 
 The `.github/workflows/ci.yml` workflow runs Python tests on Windows and macOS,
-then builds and checks both PyInstaller packages. Artifacts are not published
-automatically; a signed release remains an intentional release operation.
+then builds and checks both PyInstaller packages. The
+`.github/workflows/release.yml` workflow publishes GitHub Releases automatically
+when a tag matching `vX.Y.Z` is pushed.
 
 ## Building The Application
 
@@ -96,6 +98,27 @@ modules. The accepted PyInstaller major version is pinned in
 `requirements-build.txt`, separately from runtime dependencies. The source icon
 is `assets/autosd-icon.svg`; its 1024 px PNG version is used by PyInstaller to
 produce OS-specific resources.
+
+## Releases And Updates
+
+The application checks the latest stable GitHub Release from
+`mato0490/ultra-pro-files-manager`, ignores prereleases, compares the release
+tag with `autosd_version.py`, then selects the asset for the current platform:
+
+- `AutoSD-FileManager-windows-vX.Y.Z.zip`;
+- `AutoSD-FileManager-macos-vX.Y.Z.zip`;
+- matching SHA-256 files named with the same asset plus `.sha256`.
+
+AutoSD never downloads a release without user confirmation. After the archive
+is downloaded, the `.sha256` file must validate before the update becomes ready
+to install. AutoSD then asks a second time before starting installation. If the
+GitHub API is unavailable or no matching asset exists, the Help tab can open the
+release page manually; `AUTOSD_UPDATE_URL` is still accepted as the fallback URL.
+
+On Windows packaged builds, installation starts an external PowerShell updater
+that waits for AutoSD to close, replaces the packaged folder, then relaunches
+the app. Source-tree runs only open the verified archive location. On macOS,
+AutoSD opens the verified archive for the user to complete installation.
 
 ## Internet P2P Transfer
 
@@ -202,6 +225,7 @@ installed executable from before the current protocol was added.
 | `auto sd v5.py` | legacy Tkinter interface, kept outside the main package |
 | `network_transfer.py` | discovery, local network transfers, and direct socket transfers |
 | `webrtc_transfer.py` | rendezvous/manual negotiation and Internet WebRTC transfers |
+| `autosd_updater.py` | GitHub Releases lookup, asset download, checksum verification, installer launch |
 | `themes_config.py` | palettes and themes for the legacy interface |
 | `translations.py` | interface translations |
 | `AutoSD-FileManager.spec` | Windows/macOS PyInstaller configuration |

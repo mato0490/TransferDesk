@@ -17,6 +17,8 @@ résultats, les journaux utiles et les numéros de version avec la livraison.
 
 - [ ] la CI est verte pour les tests Python Windows et macOS ;
 - [ ] les paquets Windows et macOS sont construits sans erreur ;
+- [ ] le tag `vX.Y.Z` a créé une GitHub Release contenant les deux archives
+  `AutoSD-FileManager-*-vX.Y.Z.zip` et leurs fichiers `.sha256` ;
 - [ ] `AutoSD-FileManager.exe --self-test-network` réussit ;
 - [ ] `codesign --verify --deep --strict` réussit sur le paquet macOS ;
 - [ ] l'auto-test réseau du binaire contenu dans le paquet macOS réussit.
@@ -31,6 +33,9 @@ résultats, les journaux utiles et les numéros de version avec la livraison.
 - [ ] l'analyse de doublons ne supprime jamais un original non revérifié ;
 - [ ] un profil peut être créé, rechargé et supprimé ;
 - [ ] l'historique peut être exporté puis relu ;
+- [ ] l'onglet Aide détecte une publication plus récente, demande confirmation
+  avant téléchargement, valide le checksum, puis demande confirmation avant
+  installation ;
 - [ ] une carte ou clé USB reconnue comme amovible peut être éjectée proprement ;
 - [ ] le français, l'anglais et l'hébreu sont lisibles ; l'hébreu est bien en RTL.
 

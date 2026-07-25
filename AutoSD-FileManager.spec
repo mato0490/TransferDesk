@@ -48,7 +48,7 @@ a = Analysis(
     datas=[('qml', 'qml')],
     hiddenimports=[
         'filecmp', 'plistlib', 'queue', 'shutil', 'subprocess', 'tempfile',
-        'PIL.Image', 'autosd_core',
+        'PIL.Image', 'autosd_core', 'autosd_updater',
         'PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtQuickControls2',
     ],
     hookspath=['pyinstaller_hooks'],

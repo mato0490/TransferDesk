@@ -9,7 +9,12 @@ d'une livraison.
 ### Fonctionnalités
 
 - ajout d'un onglet Aide affichant la version installée, le code persistant du
-  PC et un bouton de vérification des mises à jour via `AUTOSD_UPDATE_URL` ;
+  PC et l'état de vérification des mises à jour ;
+- ajout d'un vérificateur de mises à jour basé sur GitHub Releases avec
+  comparaison de version, sélection de l'archive Windows/macOS, double
+  confirmation utilisateur et vérification SHA-256 avant installation ;
+- ajout d'un workflow GitHub Release déclenché par les tags `vX.Y.Z`, générant
+  les archives Windows/macOS et leurs fichiers `.sha256` ;
 - ajout d'un bloc de statistiques P2P indiquant progression, volume transféré,
   vitesse, fichier courant et état de fin ;
 - ajout d'un mode P2P par socket TCP direct : le receveur lance une écoute,

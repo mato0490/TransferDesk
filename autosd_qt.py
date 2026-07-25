@@ -22,6 +22,7 @@ except ImportError as exc:  # pragma: no cover - useful packaged/startup diagnos
 import network_transfer as nt
 import translations as i18n
 import webrtc_transfer as wt
+import autosd_updater as updater
 import autosd_core as core
 from autosd_version import __version__
 
@@ -66,6 +67,7 @@ class AutoSDBridge(QObject):
     socketCodeChanged = Signal()
     manualPayloadChanged = Signal()
     lastErrorChanged = Signal()
+    updateChanged = Signal()
     incomingLocalTransfer = Signal("QVariantMap")
     discoveryEvent = Signal(str, "QVariant")
 
@@ -99,6 +101,13 @@ class AutoSDBridge(QObject):
         self._manual_payload_kind = ""
         self._manual_sender: wt.ManualSender | None = None
         self._last_error = ""
+        self._update_state = "idle"
+        self._update_version = ""
+        self._update_message = ""
+        self._update_progress = 0.0
+        self._update_download_url = ""
+        self._update_release: updater.UpdateRelease | None = None
+        self._downloaded_update: updater.DownloadedUpdate | None = None
         self._reset_p2p_stats()
         self._device_code = self._load_device_code()
         self.discoveryEvent.connect(self._handle_discovery_event)
@@ -228,6 +237,26 @@ class AutoSDBridge(QObject):
     def appVersion(self) -> str:
         return __version__
 
+    @Property(str, notify=updateChanged)
+    def updateState(self) -> str:
+        return self._update_state
+
+    @Property(str, notify=updateChanged)
+    def updateVersion(self) -> str:
+        return self._update_version
+
+    @Property(str, notify=updateChanged)
+    def updateMessage(self) -> str:
+        return self._update_message
+
+    @Property(float, notify=updateChanged)
+    def updateProgress(self) -> float:
+        return self._update_progress
+
+    @Property(str, notify=updateChanged)
+    def updateDownloadUrl(self) -> str:
+        return self._update_download_url
+
     def _load_device_code(self) -> str:
         path = core.application_data_dir() / "device-code.txt"
         try:
@@ -349,6 +378,36 @@ class AutoSDBridge(QObject):
         if value != self._last_error:
             self._last_error = value
             self.lastErrorChanged.emit()
+
+    def _set_update(
+        self,
+        *,
+        state: str | None = None,
+        version: str | None = None,
+        message: str | None = None,
+        progress: float | None = None,
+        download_url: str | None = None,
+    ) -> None:
+        changed = False
+        if state is not None and state != self._update_state:
+            self._update_state = state
+            changed = True
+        if version is not None and version != self._update_version:
+            self._update_version = version
+            changed = True
+        if message is not None and message != self._update_message:
+            self._update_message = message
+            changed = True
+        if progress is not None:
+            normalized = max(0.0, min(1.0, float(progress)))
+            if normalized != self._update_progress:
+                self._update_progress = normalized
+                changed = True
+        if download_url is not None and download_url != self._update_download_url:
+            self._update_download_url = download_url
+            changed = True
+        if changed:
+            self.updateChanged.emit()
 
     def _event(self, name: str, data: dict[str, Any]) -> None:
         clean = {key: str(value) if isinstance(value, Path) else value for key, value in data.items()}
@@ -1115,16 +1174,163 @@ class AutoSDBridge(QObject):
 
     @Slot()
     def checkForUpdates(self) -> None:
-        url = os.environ.get("AUTOSD_UPDATE_URL", "").strip()
-        if url:
-            try:
-                webbrowser.open(url)
-                self.notification.emit("info", self.tr("update_opened"))
+        if self._busy:
+            self._warn(self.tr("operation_running"))
+            return
+        self._update_release = None
+        self._downloaded_update = None
+        self._set_update(
+            state="checking",
+            version="",
+            message=self.tr("update_checking"),
+            progress=0.0,
+            download_url="",
+        )
+
+        def done(release: updater.UpdateRelease | None) -> None:
+            if release is None:
+                self._set_update(state="up-to-date", message=self.tr("update_up_to_date", version=__version__))
+                self.notification.emit("info", self._update_message)
                 return
-            except Exception as exc:
-                self._fail(str(exc))
-                return
-        self.notification.emit("info", self.tr("update_manual", version=__version__))
+            self._update_release = release
+            self._set_update(
+                state="available",
+                version=release.version,
+                message=self.tr(
+                    "update_available",
+                    version=release.version,
+                    size=core.format_size(release.asset.size),
+                ),
+                download_url=release.asset.download_url,
+            )
+
+        def failed(message: str) -> None:
+            self._set_busy(False)
+            fallback = os.environ.get("AUTOSD_UPDATE_URL", "").strip() or updater.RELEASES_URL
+            self._set_update(
+                state="failed",
+                message=self.tr("update_check_failed", error=str(message).strip() or self.tr("unknown_error")),
+                download_url=fallback,
+            )
+            self.notification.emit("error", self._update_message)
+
+        self._start(lambda: updater.fetch_latest_release(__version__), done=done, failed=failed)
+
+    @Slot()
+    def confirmDownloadUpdate(self) -> None:
+        if self._update_release is None:
+            self.notification.emit("warning", self.tr("update_not_available"))
+            return
+        self.notification.emit("info", self.tr("update_download_confirm_required", version=self._update_release.version))
+
+    @Slot()
+    def downloadUpdate(self) -> None:
+        if self._busy:
+            self._warn(self.tr("operation_running"))
+            return
+        if self._update_release is None:
+            self.notification.emit("warning", self.tr("update_not_available"))
+            return
+        release = self._update_release
+        destination = core.application_data_dir() / "updates" / release.tag
+        self._set_update(
+            state="downloading",
+            version=release.version,
+            message=self.tr("update_downloading", version=release.version),
+            progress=0.0,
+            download_url=release.asset.download_url,
+        )
+        self._set_busy(True)
+        self._set_last_error("")
+        holder: dict[str, Worker] = {}
+
+        def progress(completed: int, total: int) -> None:
+            worker = holder.get("worker")
+            if worker is not None:
+                worker.signals.event.emit("progress", {"completed": completed, "total": total})
+
+        def operation() -> updater.DownloadedUpdate:
+            return updater.download_update(release, destination, progress=progress)
+
+        worker = Worker(operation)
+        holder["worker"] = worker
+        worker.signals.event.connect(self._update_download_event)
+        worker.signals.finished.connect(self._download_update_done)
+        worker.signals.failed.connect(self._download_update_failed)
+        self._pool.start(worker)
+
+    @Slot()
+    def confirmInstallUpdate(self) -> None:
+        if self._downloaded_update is None:
+            self.notification.emit("warning", self.tr("update_not_ready"))
+            return
+        self.notification.emit("info", self.tr("update_install_confirm_required", version=self._downloaded_update.release.version))
+
+    @Slot()
+    def installDownloadedUpdate(self) -> None:
+        if self._downloaded_update is None:
+            self.notification.emit("warning", self.tr("update_not_ready"))
+            return
+        try:
+            result = updater.install_downloaded_update(self._downloaded_update)
+        except Exception as exc:
+            message = str(exc).strip() or self.tr("unknown_error")
+            self._set_update(state="failed", message=message)
+            self._fail(message)
+            return
+        self._set_update(state="installing", message=self.tr("update_installing"))
+        if result == "open":
+            self.notification.emit("info", self.tr("update_archive_opened"))
+
+    @Slot()
+    def openUpdatePage(self) -> None:
+        url = self._update_download_url if self._update_download_url.startswith("http") else ""
+        if self._update_release is not None:
+            url = self._update_release.page_url
+        url = url or os.environ.get("AUTOSD_UPDATE_URL", "").strip() or updater.RELEASES_URL
+        try:
+            webbrowser.open(url)
+            self.notification.emit("info", self.tr("update_opened"))
+        except Exception as exc:
+            self._fail(str(exc))
+
+    @Slot(str, "QVariant")
+    def _update_download_event(self, name: str, data: Any) -> None:
+        if name != "progress":
+            return
+        clean = dict(data or {})
+        total = float(clean.get("total", 0) or 0)
+        completed = float(clean.get("completed", 0) or 0)
+        progress = completed / total if total else 0.0
+        self._set_update(
+            progress=progress,
+            message=self.tr(
+                "update_download_progress",
+                completed=core.format_size(completed),
+                total=core.format_size(total),
+            ),
+        )
+
+    @Slot("QVariant")
+    def _download_update_done(self, value: Any) -> None:
+        self._set_busy(False)
+        self._downloaded_update = value
+        release = value.release
+        self._set_update(
+            state="ready",
+            version=release.version,
+            message=self.tr("update_ready", version=release.version),
+            progress=1.0,
+            download_url=release.asset.download_url,
+        )
+
+    @Slot(str)
+    def _download_update_failed(self, message: str) -> None:
+        self._set_busy(False)
+        clean = str(message).strip() or self.tr("unknown_error")
+        self._set_last_error(clean)
+        self._set_update(state="failed", message=clean)
+        self.notification.emit("error", clean)
 
     @Slot(str)
     def copyToClipboard(self, text: str) -> None:
