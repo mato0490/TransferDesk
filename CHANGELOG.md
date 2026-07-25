@@ -85,6 +85,7 @@ d'une livraison.
 
 ### Documentation
 
+- traduction de `README.md` en anglais pour la page GitHub publique ;
 - ajout d'une documentation centrale du projet ;
 - ajout d'une checklist de recette couvrant Windows, macOS, le réseau local,
   WebRTC direct, TURN, l'intégrité des gros fichiers et le RTL ;
