@@ -22,9 +22,9 @@ except ImportError as exc:  # pragma: no cover - useful packaged/startup diagnos
 import network_transfer as nt
 import translations as i18n
 import webrtc_transfer as wt
-import ultrapro_updater as updater
-import ultrapro_core as core
-from ultrapro_version import __version__
+import transferdesk_updater as updater
+import transferdesk_core as core
+from transferdesk_version import __version__
 
 
 class WorkerSignals(QObject):
@@ -47,7 +47,7 @@ class Worker(QRunnable):
             self.signals.failed.emit(str(exc))
 
 
-class UltraProBridge(QObject):
+class TransferDeskBridge(QObject):
     busyChanged = Signal()
     languageChanged = Signal()
     themeChanged = Signal()
@@ -113,7 +113,7 @@ class UltraProBridge(QObject):
         self.discoveryEvent.connect(self._handle_discovery_event)
         self._discovery_service = nt.DiscoveryService(
             callback=self._queue_discovery_event,
-            device_name=os.environ.get("COMPUTERNAME", "UltraPro"),
+            device_name=os.environ.get("COMPUTERNAME", "TransferDesk"),
             instance_id=self._device_code,
         )
         self._discovery_service.start()
@@ -901,7 +901,7 @@ class UltraProBridge(QObject):
         self._set_manual_payload()
         self._reset_p2p_stats()
         self._set_p2p_state("generating")
-        receiver = wt.UniversalReceiver(target, url, os.environ.get("COMPUTERNAME", "UltraPro"), self._cancel, self._p2p_event)
+        receiver = wt.UniversalReceiver(target, url, os.environ.get("COMPUTERNAME", "TransferDesk"), self._cancel, self._p2p_event)
         self._start(
             receiver.receive_once,
             done=lambda result: self._p2p_done(result, "receive", "P2P Internet", str(target)),
@@ -930,7 +930,7 @@ class UltraProBridge(QObject):
         self._set_manual_payload()
         self._reset_p2p_stats()
         self._set_p2p_state("connecting")
-        sender = wt.UniversalSender(code, url, os.environ.get("COMPUTERNAME", "UltraPro"), self._cancel, self._p2p_event)
+        sender = wt.UniversalSender(code, url, os.environ.get("COMPUTERNAME", "TransferDesk"), self._cancel, self._p2p_event)
         self._start(
             lambda: sender.send_files(paths),
             done=lambda result: self._p2p_done(result, "send", "; ".join(str(path) for path in paths), "P2P Internet"),
@@ -1206,7 +1206,7 @@ class UltraProBridge(QObject):
 
         def failed(message: str) -> None:
             self._set_busy(False)
-            fallback = os.environ.get("ULTRAPRO_UPDATE_URL", "").strip() or updater.RELEASES_URL
+            fallback = os.environ.get("TRANSFERDESK_UPDATE_URL", "").strip() or updater.RELEASES_URL
             self._set_update(
                 state="failed",
                 message=self.tr("update_check_failed", error=str(message).strip() or self.tr("unknown_error")),
@@ -1287,7 +1287,7 @@ class UltraProBridge(QObject):
         url = self._update_download_url if self._update_download_url.startswith("http") else ""
         if self._update_release is not None:
             url = self._update_release.page_url
-        url = url or os.environ.get("ULTRAPRO_UPDATE_URL", "").strip() or updater.RELEASES_URL
+        url = url or os.environ.get("TRANSFERDESK_UPDATE_URL", "").strip() or updater.RELEASES_URL
         try:
             webbrowser.open(url)
             self.notification.emit("info", self.tr("update_opened"))
@@ -1348,7 +1348,7 @@ class UltraProBridge(QObject):
 
 def main() -> int:
     if "--self-test-network" in sys.argv:
-        identity = nt.create_tls_identity("UltraPro packaged self-test")
+        identity = nt.create_tls_identity("TransferDesk packaged self-test")
         try:
             invitation = nt.InternetInvitation("127.0.0.1", 48722, "123456", identity.fingerprint,
                                                int(datetime.now().timestamp()) + 60, "Self-test")
@@ -1362,11 +1362,11 @@ def main() -> int:
         return 0
     os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "Basic")
     app = QGuiApplication(sys.argv)
-    app.setApplicationName("UltraPro File Manager")
+    app.setApplicationName("TransferDesk")
     app.setApplicationVersion(__version__)
-    app.setOrganizationName("UltraPro")
+    app.setOrganizationName("TransferDesk")
     engine = QQmlApplicationEngine()
-    bridge = UltraProBridge()
+    bridge = TransferDeskBridge()
     app.aboutToQuit.connect(bridge.shutdown)
     engine.rootContext().setContextProperty("backend", bridge)
     qml = Path(__file__).with_name("qml") / "Main.qml"

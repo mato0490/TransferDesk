@@ -1,4 +1,4 @@
-﻿"""Universal encrypted UltraPro transfers using WebRTC ICE/STUN/TURN.
+﻿"""Universal encrypted TransferDesk transfers using WebRTC ICE/STUN/TURN.
 
 The rendezvous service only exchanges signed WebRTC descriptions. File bytes
 travel through the end-to-end encrypted WebRTC data channel, directly whenever
@@ -45,7 +45,7 @@ CLOUDFLARE_HOST_SUFFIXES = (
 )
 ROOM_LIFETIME_SECONDS = 15 * 60
 MANUAL_SIGNAL_VERSION = 1
-MANUAL_SIGNAL_PREFIX = "ULTRAPRO-MANUAL-1."
+MANUAL_SIGNAL_PREFIX = "TRANSFERDESK-MANUAL-1."
 MAX_MANUAL_SIGNAL_CHARS = (MAX_SIGNAL_BYTES * 4 // 3) + 256
 EventCallback = Callable[[str, dict], None]
 
@@ -96,7 +96,7 @@ def normalize_rendezvous_url(value: str) -> str:
 
 def default_rendezvous_url() -> str:
     """Return the configured service URL without embedding any secret."""
-    environment_value = os.environ.get("ULTRAPRO_RENDEZVOUS_URL", "").strip()
+    environment_value = os.environ.get("TRANSFERDESK_RENDEZVOUS_URL", "").strip()
     if environment_value:
         return environment_value.rstrip("/")
     roots = [Path.cwd(), Path(__file__).resolve().parent]
@@ -106,7 +106,7 @@ def default_rendezvous_url() -> str:
         if bundle_root:
             roots.insert(0, Path(bundle_root))
     for root in roots:
-        for filename in ("ultrapro-network.json",):
+        for filename in ("transferdesk-network.json",):
             configuration = root / filename
             if not configuration.is_file():
                 continue
@@ -285,7 +285,7 @@ def _parse_ice_servers(raw_servers: object) -> tuple[IceServer, ...]:
 def _connection_timeout_message(servers: tuple[IceServer, ...]) -> str:
     message = (
         "Aucun chemin P2P n’a pu être établi. Vérifie que les deux PC utilisent "
-        "la même version d’UltraPro, autorise UltraPro dans le pare-feu Windows et "
+        "la même version d’TransferDesk, autorise TransferDesk dans le pare-feu Windows et "
         "désactive l’isolation des appareils du réseau Wi-Fi."
     )
     has_turn = any(
@@ -299,7 +299,7 @@ def _connection_timeout_message(servers: tuple[IceServer, ...]) -> str:
 
 
 class RendezvousClient:
-    """Small HTTP client for an UltraPro-compatible rendezvous service."""
+    """Small HTTP client for an TransferDesk-compatible rendezvous service."""
 
     def __init__(self, base_url: str, timeout: float = 12.0) -> None:
         self.base_url = normalize_rendezvous_url(base_url)
@@ -315,7 +315,7 @@ class RendezvousClient:
         pending_ok: bool = False,
     ) -> dict | None:
         body = None
-        headers = {"Accept": "application/json", "User-Agent": "UltraPro/8"}
+        headers = {"Accept": "application/json", "User-Agent": "TransferDesk/8"}
         if payload is not None:
             body = json.dumps(payload, separators=(",", ":")).encode("utf-8")
             headers["Content-Type"] = "application/json"
@@ -643,8 +643,8 @@ async def _receive_files(
     inbox = channel if isinstance(channel, _ChannelInbox) else _ChannelInbox(channel, cancel_event)
     offer = await inbox.receive_control("offer")
     if offer.get("version") != WEBRTC_PROTOCOL_VERSION:
-        await inbox.send_control("error", message="Version UltraPro incompatible.")
-        raise UniversalTransferError("Version UltraPro incompatible.")
+        await inbox.send_control("error", message="Version TransferDesk incompatible.")
+        raise UniversalTransferError("Version TransferDesk incompatible.")
     raw_files = offer.get("files")
     if not isinstance(raw_files, list) or not raw_files or len(raw_files) > 10_000:
         raise UniversalTransferError("Liste de fichiers invalide.")
@@ -670,7 +670,7 @@ async def _receive_files(
         if int(control.get("index", -1)) != index:
             raise UniversalTransferError("Ordre des fichiers invalide.")
         final_path = _available_path(destination, name)
-        temporary = destination / f".{final_path.name}.ultrapro-part-{secrets.token_hex(5)}"
+        temporary = destination / f".{final_path.name}.transferdesk-part-{secrets.token_hex(5)}"
         digest = hashlib.sha256()
         received = 0
         try:
@@ -766,7 +766,7 @@ class ManualSender:
         from aiortc import RTCPeerConnection, RTCSessionDescription
 
         pc = RTCPeerConnection(_rtc_configuration(self.ice_servers))
-        channel = pc.createDataChannel("ultrapro-files", ordered=True)
+        channel = pc.createDataChannel("transferdesk-files", ordered=True)
 
         @pc.on("connectionstatechange")
         async def on_connectionstatechange() -> None:
@@ -981,7 +981,7 @@ class UniversalSender:
 
         session = await asyncio.to_thread(self.client.join_room, self.room_id, self.device_name)
         pc = RTCPeerConnection(_rtc_configuration(session.ice_servers))
-        channel = pc.createDataChannel("ultrapro-files", ordered=True)
+        channel = pc.createDataChannel("transferdesk-files", ordered=True)
 
         @pc.on("connectionstatechange")
         async def on_connectionstatechange() -> None:

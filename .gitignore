@@ -21,8 +21,8 @@ dist-*/
 *.app/
 
 # Configuration propre à une machine
-ultrapro-network.json
-!ultrapro-network.example.json
+transferdesk-network.json
+!transferdesk-network.example.json
 
 # Éditeurs et système
 .idea/

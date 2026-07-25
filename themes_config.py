@@ -1,4 +1,4 @@
-﻿"""Configuration centralisee des themes de l'application UltraPro.
+﻿"""Configuration centralisee des themes de l'application TransferDesk.
 
 Ce module ne depend d'aucune bibliotheque externe. Les palettes sont utilisees
 par ``legacy_file_manager.py`` et les constantes historiques restent disponibles pour

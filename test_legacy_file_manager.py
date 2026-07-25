@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
-import ultrapro_core as legacy_core
+import transferdesk_core as legacy_core
 import themes_config as tc
 import translations as i18n
 
@@ -30,7 +30,7 @@ class HelpersTests(unittest.TestCase):
         ):
             self.assertEqual(
                 legacy_core.application_data_dir(),
-                Path("/Users/tester/Library/Application Support/UltraProFileManager"),
+                Path("/Users/tester/Library/Application Support/TransferDesk"),
             )
 
     def test_macos_removable_volumes_are_detected_with_diskutil(self):
@@ -95,7 +95,7 @@ class HelpersTests(unittest.TestCase):
             self.skipTest(f"Interface graphique indisponible : {exc}")
         root.withdraw()
         try:
-            app = legacy.UltraProApp(root)
+            app = legacy.TransferDeskApp(root)
             for language, name in i18n.LANGUAGE_NAMES.items():
                 with self.subTest(language=language):
                     app.language_var.set(name)

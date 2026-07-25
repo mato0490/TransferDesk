@@ -1,4 +1,4 @@
-﻿# Construire UltraPro pour macOS
+﻿# Construire TransferDesk pour macOS
 
 La version macOS utilise le même protocole P2P v2 que la version Windows.
 Les deux applications peuvent donc créer et rejoindre les mêmes codes de transfert.
@@ -19,34 +19,34 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements-build.txt
 python -m unittest discover -v
-python -m PyInstaller --noconfirm --clean UltraPro-FileManager.spec
+python -m PyInstaller --noconfirm --clean TransferDesk.spec
 ```
 
-L'application est créée dans `dist/UltraPro File Manager.app`.
+L'application est créée dans `dist/TransferDesk.app`.
 
-Le paquet principal contient `ultrapro_core.py` et l'interface Qt Quick. L'ancien
+Le paquet principal contient `transferdesk_core.py` et l'interface Qt Quick. L'ancien
 client Tkinter `legacy_file_manager.py` n'est pas intégré à l'application générée.
 Le fichier de spécification utilise une construction en dossier (`COLLECT`),
 puis crée le paquet `.app`. Cette organisation permet à `codesign` de parcourir
 et de vérifier les bibliothèques Python et Qt incluses.
 Un hook QML propre au projet n'embarque que Qt Quick, Controls, Layouts et
 Dialogs, ce qui exclut notamment WebEngine et les modules 3D inutilisés.
-PyInstaller convertit `assets/ultrapro-icon.png` en icône du paquet macOS.
+PyInstaller convertit `assets/transferdesk-icon.png` en icône du paquet macOS.
 
 ## Archive de publication
 
 Lorsqu'un tag `vX.Y.Z` est pousse sur GitHub, le workflow Release reconstruit
 l'application macOS, applique la signature ad hoc de validation, puis publie
-`UltraPro-FileManager-macos-vX.Y.Z.zip` et son fichier
-`UltraPro-FileManager-macos-vX.Y.Z.zip.sha256` dans GitHub Releases. Cette archive
+`TransferDesk-macos-vX.Y.Z.zip` et son fichier
+`TransferDesk-macos-vX.Y.Z.zip.sha256` dans GitHub Releases. Cette archive
 est le format attendu par le verificateur de mises a jour de l'application.
 
 ## Signature locale de test
 
 ```bash
-codesign --force --deep --sign - "dist/UltraPro File Manager.app"
-codesign --verify --deep --strict --verbose=2 "dist/UltraPro File Manager.app"
-"dist/UltraPro File Manager.app/Contents/MacOS/UltraPro-FileManager" --self-test-network
+codesign --force --deep --sign - "dist/TransferDesk.app"
+codesign --verify --deep --strict --verbose=2 "dist/TransferDesk.app"
+"dist/TransferDesk.app/Contents/MacOS/TransferDesk" --self-test-network
 ```
 
 Pour distribuer l'application à d'autres utilisateurs sans avertissement Gatekeeper,

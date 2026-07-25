@@ -63,7 +63,7 @@ ApplicationWindow {
                 MouseArea { anchors.fill: parent; onPressed: window.startSystemMove(); acceptedButtons: Qt.LeftButton }
                 RowLayout {
                     anchors.fill: parent; anchors.leftMargin: 16; spacing: 10
-                    Label { text: "UltraPro"; color: ink; font.pixelSize: 17; font.weight: Font.DemiBold }
+                    Label { text: "TransferDesk"; color: ink; font.pixelSize: 17; font.weight: Font.DemiBold }
                     Label { text: t("app_title"); color: muted; font.pixelSize: 13; font.letterSpacing: .2 }
                     Item { Layout.fillWidth: true }
                     ToolButton { text: "−"; implicitWidth: 36; implicitHeight: 36; onClicked: window.showMinimized(); background: Item { } contentItem: Text { text: parent.text; color: parent.hovered ? accent : ink; font.pixelSize: 18; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter } }
@@ -78,7 +78,7 @@ ApplicationWindow {
                     border.color: dark ? "#33ffffff" : "#bbffffff"
                     ColumnLayout {
                         anchors.fill: parent; anchors.margins: 14; spacing: 8
-                        Label { text: "◉  UltraPro"; color: ink; font.pixelSize: 21; font.weight: Font.DemiBold; Layout.bottomMargin: 16 }
+                        Label { text: "◉  TransferDesk"; color: ink; font.pixelSize: 21; font.weight: Font.DemiBold; Layout.bottomMargin: 16 }
                         Repeater {
                             model: ["⇄  " + t("tab_transfer"), "⌘  " + t("tab_duplicates"), "◷  " + t("tab_history"), "⌁  " + t("nav_p2p"), "?  " + t("tab_help")]
                             delegate: Button {

@@ -1,8 +1,8 @@
-﻿"""Collect only the QML modules used by UltraPro.
+﻿"""Collect only the QML modules used by TransferDesk.
 
 PyInstaller's generic PySide6 hook deliberately collects every QML module in
 the wheel.  That includes WebEngine, 3D, charts and multimedia even though the
-UltraPro interface imports only Qt Quick Controls, Layouts and Dialogs.
+TransferDesk interface imports only Qt Quick Controls, Layouts and Dialogs.
 """
 
 from pathlib import PurePath

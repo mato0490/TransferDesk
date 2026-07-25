@@ -26,7 +26,7 @@ import themes_config as tc
 import translations as i18n
 import network_transfer as nt
 import webrtc_transfer as wt
-from ultrapro_version import __version__
+from transferdesk_version import __version__
 
 
 APP_TITLE = "File Manager"
@@ -197,10 +197,10 @@ def enable_windows_liquid_glass(root: tk.Tk) -> None:
 def application_data_dir() -> Path:
     """Return a writable per-user directory in source and frozen builds."""
     if sys.platform == "darwin":
-        return Path.home() / "Library" / "Application Support" / "UltraProFileManager"
+        return Path.home() / "Library" / "Application Support" / "TransferDesk"
     base = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
     if base:
-        return Path(base) / "UltraProFileManager"
+        return Path(base) / "TransferDesk"
     return Path.home() / ".auto_sd_file_manager"
 
 
@@ -1063,7 +1063,7 @@ class DuplicateEngine:
 
 # L'interface historique conserve ses définitions pour compatibilité avec les
 # anciens scripts, mais utilise les symboles du moteur extrait à l'exécution.
-from ultrapro_core import (
+from transferdesk_core import (
     ALL_EXTENSIONS,
     DuplicateEngine,
     DuplicateGroup,
@@ -1095,7 +1095,7 @@ from ultrapro_core import (
 )
 
 
-class UltraProApp:
+class TransferDeskApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.geometry("1180x840")
@@ -3615,7 +3615,7 @@ class UltraProApp:
 
 def main() -> None:
     if "--self-test-network" in sys.argv:
-        identity = nt.create_tls_identity("UltraPro packaged self-test")
+        identity = nt.create_tls_identity("TransferDesk packaged self-test")
         try:
             invitation = nt.InternetInvitation(
                 host="127.0.0.1",
@@ -3638,7 +3638,7 @@ def main() -> None:
             identity.close()
         return
     root = tk.Tk()
-    UltraProApp(root)
+    TransferDeskApp(root)
     root.mainloop()
 
 

@@ -1,7 +1,7 @@
 ﻿# Interface PySide6 / Qt Quick
 
-L'entrée principale est désormais `ultrapro_qt.py`. Le moteur métier partagé se
-trouve dans `ultrapro_core.py` ; les formats JSON et les modules réseau restent
+L'entrée principale est désormais `transferdesk_qt.py`. Le moteur métier partagé se
+trouve dans `transferdesk_core.py` ; les formats JSON et les modules réseau restent
 compatibles. L'interface QML se trouve dans `qml/Main.qml` et est intégrée au
 build PyInstaller.
 
@@ -9,22 +9,22 @@ build PyInstaller.
 
 ```powershell
 py -m pip install -r requirements.txt
-py ultrapro_qt.py
+py transferdesk_qt.py
 py -m unittest discover -v
 ```
 
 ## Build Windows
 
 ```powershell
-py -m PyInstaller --clean UltraPro-FileManager.spec
-dist\UltraPro-FileManager.exe --self-test-network
+py -m PyInstaller --clean TransferDesk.spec
+dist\TransferDesk.exe --self-test-network
 ```
 
 Qt Quick utilise un cadre sans bordure, un thème clair Liquid Glass par défaut et
 un thème sombre. Sans composition graphique, les panneaux opaques/translucides
 constituent automatiquement le rendu de secours.
 
-L'interface Qt prend en charge la découverte des autres instances UltraPro sur le
+L'interface Qt prend en charge la découverte des autres instances TransferDesk sur le
 réseau local, la sélection des fichiers, l'acceptation côté destinataire et la
 négociation automatique du code d'appairage. Le service de découverte est lancé
 et arrêté avec l'application.
@@ -61,7 +61,7 @@ Tous les libellés QML utilisent le catalogue partagé de `translations.py`.
 Changer la langue actualise les pages et dialogues en français, anglais ou
 hébreu ; cette dernière langue active aussi la mise en page droite-à-gauche.
 
-Le pont Qt importe directement `ultrapro_core`, sans chargement dynamique du
+Le pont Qt importe directement `transferdesk_core`, sans chargement dynamique du
 fichier historique portant un espace dans son nom. Le client Tkinter réutilise
 les classes extraites, tandis que PyInstaller n'embarque plus ce client ni ses
 dépendances d'interface.

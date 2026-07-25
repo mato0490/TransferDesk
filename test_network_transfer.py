@@ -41,7 +41,7 @@ class LocalNetworkTransferTests(unittest.TestCase):
         first = self.source / "photo.bin"
         second = self.source / "notes.txt"
         first.write_bytes(bytes(range(256)) * 5000)
-        second.write_text("UltraPro local transfer", encoding="utf-8")
+        second.write_text("TransferDesk local transfer", encoding="utf-8")
         server, worker, outcome = self.start_server()
 
         client = network.LocalTransferClient(
@@ -56,7 +56,7 @@ class LocalNetworkTransferTests(unittest.TestCase):
         self.assertEqual(outcome["result"].files, 2)
         self.assertEqual((self.destination / first.name).read_bytes(), first.read_bytes())
         self.assertEqual((self.destination / second.name).read_bytes(), second.read_bytes())
-        self.assertFalse(list(self.destination.glob("*.ultrapro-part")))
+        self.assertFalse(list(self.destination.glob("*.transferdesk-part")))
 
     def test_complete_folder_preserves_nested_tree(self):
         album = self.source / "Album"
@@ -84,7 +84,7 @@ class LocalNetworkTransferTests(unittest.TestCase):
             (self.destination / "Album" / "Jour 1" / "Sélection" / "photo.bin").read_bytes(),
             photo.read_bytes(),
         )
-        self.assertFalse(list(self.destination.rglob("*.ultrapro-part")))
+        self.assertFalse(list(self.destination.rglob("*.transferdesk-part")))
 
     def test_existing_destination_is_not_overwritten(self):
         source = self.source / "same.txt"
@@ -130,7 +130,7 @@ class LocalNetworkTransferTests(unittest.TestCase):
 
     def test_interrupted_large_transfer_can_be_retried_cleanly(self):
         source = self.source / "large-retry.bin"
-        source.write_bytes(b"UltraPro" * 1_500_000)
+        source.write_bytes(b"TransferDesk" * 1_500_000)
         cancel = threading.Event()
 
         def cancel_after_progress(event, data):
@@ -304,7 +304,7 @@ class DiscoveryTests(unittest.TestCase):
             destination = base / "received"
             destination.mkdir()
             source = base / "airdrop.txt"
-            source.write_text("UltraPro nearby transfer", encoding="utf-8")
+            source.write_text("TransferDesk nearby transfer", encoding="utf-8")
             transfer_outcome = {}
             server_worker = None
             service = None
@@ -355,7 +355,7 @@ class DiscoveryTests(unittest.TestCase):
             self.assertNotIn("error", transfer_outcome)
             self.assertEqual(
                 (destination / source.name).read_text(encoding="utf-8"),
-                "UltraPro nearby transfer",
+                "TransferDesk nearby transfer",
             )
 
 

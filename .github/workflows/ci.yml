@@ -62,12 +62,12 @@ jobs:
       - name: Install packaging dependencies
         run: python -m pip install --upgrade pip && python -m pip install -r requirements-build.txt
       - name: Build application
-        run: python -m PyInstaller --noconfirm --clean UltraPro-FileManager.spec
+        run: python -m PyInstaller --noconfirm --clean TransferDesk.spec
       - name: Verify packaged network components (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $process = Start-Process -FilePath ".\dist\UltraPro-FileManager\UltraPro-FileManager.exe" -ArgumentList "--self-test-network" -Wait -PassThru
+          $process = Start-Process -FilePath ".\dist\TransferDesk\TransferDesk.exe" -ArgumentList "--self-test-network" -Wait -PassThru
           if ($process.ExitCode -ne 0) {
             throw "Packaged network self-test failed with exit code $($process.ExitCode)."
           }
@@ -75,6 +75,6 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: |
-          codesign --force --deep --sign - "dist/UltraPro File Manager.app"
-          codesign --verify --deep --strict --verbose=2 "dist/UltraPro File Manager.app"
-          "dist/UltraPro File Manager.app/Contents/MacOS/UltraPro-FileManager" --self-test-network
+          codesign --force --deep --sign - "dist/TransferDesk.app"
+          codesign --verify --deep --strict --verbose=2 "dist/TransferDesk.app"
+          "dist/TransferDesk.app/Contents/MacOS/TransferDesk" --self-test-network
