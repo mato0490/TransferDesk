@@ -8,6 +8,8 @@ d'une livraison.
 
 ### Fonctionnalités
 
+- refonte de `README.md` en guide utilisateur centré sur le téléchargement,
+  l'installation Windows/macOS, les mises à jour et la compilation ;
 - ajout d'un onglet Aide affichant la version installée, le code persistant du
   PC et l'état de vérification des mises à jour ;
 - ajout d'un vérificateur de mises à jour basé sur GitHub Releases avec
