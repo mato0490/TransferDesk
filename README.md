@@ -164,6 +164,11 @@ git push origin vX.Y.Z
 GitHub Actions construit alors automatiquement les paquets Windows et macOS,
 crée les fichiers `.sha256`, puis publie la GitHub Release.
 
+Pour compléter une release déjà créée à la main, ouvrez **Actions > Release >
+Run workflow**, indiquez le tag existant, par exemple `v8.0.3`, puis lancez le
+workflow. GitHub reconstruit alors les assets Windows/macOS et les remplace dans
+la release.
+
 ## Liens utiles
 
 - [BUILD-MACOS.md](BUILD-MACOS.md) : construction, signature et validation macOS.

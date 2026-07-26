@@ -54,6 +54,11 @@ d'une livraison.
 
 ### Corrections
 
+- ajout d'un déclenchement manuel au workflow Release afin de reconstruire et
+  compléter une release existante avec les assets Windows/macOS depuis GitHub
+  Actions ;
+- génération d'une icône macOS `.icns` dans le workflow Release pour fiabiliser
+  le paquet `TransferDesk.app` produit par PyInstaller ;
 - correction des versions d'actions GitHub utilisées par la CI et le workflow
   Release afin de relancer correctement la publication des paquets ;
 - correction du README pour retirer la mention de date documentaire, lisser les
@@ -75,6 +80,8 @@ d'une livraison.
 
 ### Maintenance
 
+- passage de la version canonique à `8.0.4` pour déclencher une nouvelle
+  publication GitHub Actions complète avec asset macOS ;
 - centralisation de la version de l'application dans `transferdesk_version.py` ;
 - extraction du moteur métier dans `transferdesk_core.py`, import direct depuis Qt et
   retrait du client Tkinter du paquet PyInstaller ;

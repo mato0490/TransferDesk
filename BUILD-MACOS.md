@@ -9,6 +9,10 @@ Les deux applications peuvent donc créer et rejoindre les mêmes codes de trans
 - Python 3.12 ou 3.13 ;
 - les outils de ligne de commande Xcode.
 
+Sans Mac local, utilisez le workflow GitHub Actions **Release**. Il s'exécute
+sur un runner `macos-latest`, construit `TransferDesk.app`, génère l'archive
+macOS et l'attache à la GitHub Release.
+
 ## Construction
 
 Dans Terminal, à la racine du projet :
@@ -31,7 +35,9 @@ puis crée le paquet `.app`. Cette organisation permet à `codesign` de parcouri
 et de vérifier les bibliothèques Python et Qt incluses.
 Un hook QML propre au projet n'embarque que Qt Quick, Controls, Layouts et
 Dialogs, ce qui exclut notamment WebEngine et les modules 3D inutilisés.
-PyInstaller convertit `assets/transferdesk-icon.png` en icône du paquet macOS.
+En CI, le workflow convertit `assets/transferdesk-icon.png` en
+`assets/transferdesk-icon.icns` avant PyInstaller. En construction locale,
+PyInstaller peut utiliser le PNG si le fichier `.icns` n'a pas été généré.
 
 ## Archive de publication
 
@@ -40,6 +46,11 @@ l'application macOS, applique la signature ad hoc de validation, puis publie
 `TransferDesk-macos-vX.Y.Z.zip` et son fichier
 `TransferDesk-macos-vX.Y.Z.zip.sha256` dans GitHub Releases. Cette archive
 est le format attendu par le verificateur de mises a jour de l'application.
+
+Le workflow peut aussi être lancé manuellement depuis **Actions > Release >
+Run workflow** avec un tag existant, par exemple `v8.0.3`. Dans ce cas, il
+reconstruit les paquets Windows/macOS depuis ce tag et remplace les assets de la
+release avec `--clobber`.
 
 ## Signature locale de test
 

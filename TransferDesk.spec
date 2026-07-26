@@ -1,6 +1,7 @@
 ﻿# -*- mode: python ; coding: utf-8 -*-
 
 import sys
+from pathlib import Path
 
 from transferdesk_version import __version__
 
@@ -61,6 +62,10 @@ a = Analysis(
 pyz = PYZ(a.pure)
 
 if sys.platform == 'darwin':
+    mac_icon = 'assets/transferdesk-icon.icns'
+    if not Path(mac_icon).exists():
+        mac_icon = 'assets/transferdesk-icon.png'
+
     exe = EXE(
         pyz, a.scripts, [],
         exclude_binaries=True,
@@ -76,7 +81,7 @@ if sys.platform == 'darwin':
     app = BUNDLE(
         bundle,
         name='TransferDesk.app',
-        icon='assets/transferdesk-icon.png',
+        icon=mac_icon,
         bundle_identifier='com.transferdesk.app',
         version=__version__,
         info_plist={

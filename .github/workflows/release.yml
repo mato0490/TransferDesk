@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to package and publish, for example v8.0.3"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -15,6 +21,7 @@ concurrency:
 env:
   PYTHONUNBUFFERED: "1"
   QT_QPA_PLATFORM: offscreen
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
 
 jobs:
   package:
@@ -30,12 +37,53 @@ jobs:
             platform: macos
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
+      - name: Validate release tag
+        shell: python
+        run: |
+          import os
+          import re
+          import sys
+          from pathlib import Path
+
+          tag = os.environ["RELEASE_TAG"]
+          if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
+              raise SystemExit(f"Invalid release tag: {tag}")
+
+          namespace = {}
+          exec(Path("transferdesk_version.py").read_text(encoding="utf-8"), namespace)
+          expected = tag[1:]
+          actual = namespace.get("__version__")
+          if actual != expected:
+              raise SystemExit(
+                  f"Tag {tag} does not match transferdesk_version.py ({actual})."
+              )
       - name: Install packaging dependencies
         run: python -m pip install --upgrade pip && python -m pip install -r requirements-build.txt
+      - name: Generate macOS icon
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          iconset="assets/transferdesk-icon.iconset"
+          rm -rf "$iconset"
+          mkdir -p "$iconset"
+          sips -z 16 16 assets/transferdesk-icon.png --out "$iconset/icon_16x16.png"
+          sips -z 32 32 assets/transferdesk-icon.png --out "$iconset/icon_16x16@2x.png"
+          sips -z 32 32 assets/transferdesk-icon.png --out "$iconset/icon_32x32.png"
+          sips -z 64 64 assets/transferdesk-icon.png --out "$iconset/icon_32x32@2x.png"
+          sips -z 128 128 assets/transferdesk-icon.png --out "$iconset/icon_128x128.png"
+          sips -z 256 256 assets/transferdesk-icon.png --out "$iconset/icon_128x128@2x.png"
+          sips -z 256 256 assets/transferdesk-icon.png --out "$iconset/icon_256x256.png"
+          sips -z 512 512 assets/transferdesk-icon.png --out "$iconset/icon_256x256@2x.png"
+          sips -z 512 512 assets/transferdesk-icon.png --out "$iconset/icon_512x512.png"
+          sips -z 1024 1024 assets/transferdesk-icon.png --out "$iconset/icon_512x512@2x.png"
+          iconutil -c icns "$iconset" -o assets/transferdesk-icon.icns
       - name: Build application
         run: python -m PyInstaller --noconfirm --clean TransferDesk.spec
       - name: Verify packaged network components (Windows)
@@ -57,7 +105,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $version = "${env:GITHUB_REF_NAME}".TrimStart("v")
+          $version = "${env:RELEASE_TAG}".TrimStart("v")
           $asset = "TransferDesk-windows-v$version.zip"
           Compress-Archive -Path ".\dist\TransferDesk" -DestinationPath $asset -Force
           (Get-FileHash -Algorithm SHA256 $asset).Hash.ToLower() + "  $asset" | Set-Content -Encoding ascii "$asset.sha256"
@@ -65,7 +113,7 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${RELEASE_TAG#v}"
           asset="TransferDesk-macos-v${version}.zip"
           ditto -c -k --sequesterRsrc --keepParent "dist/TransferDesk.app" "$asset"
           shasum -a 256 "$asset" | awk '{print $1 "  " $2}' > "$asset.sha256"
@@ -93,7 +141,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="${GITHUB_REF_NAME}"
+          tag="${RELEASE_TAG}"
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" release-assets/* --clobber
           else
