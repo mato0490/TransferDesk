@@ -80,7 +80,7 @@ d'une livraison.
 
 ### Maintenance
 
-- passage de la version canonique à `8.0.4` pour déclencher une nouvelle
+- passage de la version canonique à `8.0.5` pour déclencher une nouvelle
   publication GitHub Actions complète avec asset macOS ;
 - centralisation de la version de l'application dans `transferdesk_version.py` ;
 - extraction du moteur métier dans `transferdesk_core.py`, import direct depuis Qt et

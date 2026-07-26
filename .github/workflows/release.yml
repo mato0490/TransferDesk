@@ -56,7 +56,7 @@ jobs:
               raise SystemExit(f"Invalid release tag: {tag}")
 
           namespace = {}
-          exec(Path("transferdesk_version.py").read_text(encoding="utf-8"), namespace)
+          exec(Path("transferdesk_version.py").read_text(encoding="utf-8-sig"), namespace)
           expected = tag[1:]
           actual = namespace.get("__version__")
           if actual != expected:
