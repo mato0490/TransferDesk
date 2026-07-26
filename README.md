@@ -1,83 +1,81 @@
-﻿# TransferDesk
+# TransferDesk
 
-TransferDesk est une application Windows et macOS pour copier, trier,
-transférer et vérifier des fichiers. Elle sert notamment à vider un support amovible,
-organiser des fichiers, trouver des doublons exacts et envoyer des fichiers
-entre deux ordinateurs.
+TransferDesk is a Windows and macOS application for copying, sorting,
+transferring, and verifying files. It is useful for emptying removable media,
+organizing files, finding exact duplicates, and sending files between two
+computers.
 
-## Télécharger l'application
+## Download the Application
 
-Les versions prêtes à utiliser sont publiées sur GitHub Releases :
+Ready-to-use builds are published on GitHub Releases:
 
 <https://github.com/mato0490/transferdesk/releases>
 
-Téléchargez le fichier correspondant à votre système :
+Download the file that matches your system:
 
-| Système | Fichier à télécharger |
+| System | File to download |
 | --- | --- |
 | Windows | `TransferDesk-windows-vX.Y.Z.zip` |
 | macOS | `TransferDesk-macos-vX.Y.Z.zip` |
 
-Les fichiers `.sha256` servent à vérifier l'intégrité du téléchargement. Ils
-sont aussi utilisés automatiquement par le système de mise à jour intégré.
+The `.sha256` files are used to verify download integrity. They are also used
+automatically by the built-in update system.
 
-## Installation sur Windows
+## Windows Installation
 
-1. Téléchargez `TransferDesk-windows-vX.Y.Z.zip` depuis la page Releases.
-2. Décompressez le fichier `.zip`.
-3. Ouvrez le dossier `TransferDesk`.
-4. Lancez `TransferDesk.exe`.
+1. Download `TransferDesk-windows-vX.Y.Z.zip` from the Releases page.
+2. Extract the `.zip` file.
+3. Open the `TransferDesk` folder.
+4. Run `TransferDesk.exe`.
 
-Si Windows affiche un avertissement SmartScreen, choisissez **Informations
-complémentaires**, puis **Exécuter quand même** si vous faites confiance à la
-version téléchargée depuis ce dépôt.
+If Windows shows a SmartScreen warning, choose **More info**, then **Run
+anyway** if you trust the version downloaded from this repository.
 
-## Installation sur macOS
+## macOS Installation
 
-1. Téléchargez `TransferDesk-macos-vX.Y.Z.zip` depuis la page Releases.
-2. Décompressez le fichier `.zip`.
-3. Déplacez `TransferDesk.app` dans le dossier **Applications**.
-4. Ouvrez l'application.
+1. Download `TransferDesk-macos-vX.Y.Z.zip` from the Releases page.
+2. Extract the `.zip` file.
+3. Move `TransferDesk.app` to the **Applications** folder.
+4. Open the application.
 
-Si macOS bloque l'ouverture parce que l'app n'est pas notarisée, ouvrez
-**Réglages système > Confidentialité et sécurité**, puis choisissez
-**Ouvrir quand même** pour TransferDesk.
+If macOS blocks the app because it is not notarized, open **System Settings >
+Privacy & Security**, then choose **Open Anyway** for TransferDesk.
 
-## Mettre à jour
+## Updating
 
-Dans l'application :
+In the application:
 
-1. Ouvrez l'onglet **Aide**.
-2. Cliquez sur **Vérifier les mises à jour**.
-3. Si une nouvelle version existe, confirmez le téléchargement.
-4. Après vérification SHA-256, confirmez l'installation.
+1. Open the **Help** tab.
+2. Click **Check for updates**.
+3. If a new version is available, confirm the download.
+4. After SHA-256 verification, confirm the installation.
 
-TransferDesk ne télécharge jamais une mise à jour sans confirmation et ne
-l'installe jamais sans une deuxième confirmation.
+TransferDesk never downloads an update without confirmation and never installs
+it without a second confirmation.
 
-Sur Windows, une version empaquetée peut se remplacer automatiquement après
-fermeture de l'application. Sur macOS, TransferDesk ouvre l'archive vérifiée
-pour que vous terminiez l'installation.
+On Windows, a packaged version can replace itself automatically after the
+application closes. On macOS, TransferDesk opens the verified archive so you can
+finish the installation.
 
-## Utilisation rapide
+## Quick Start
 
-- **Transfert de fichiers** : choisissez une source, une destination, puis
-  lancez l'aperçu ou le transfert.
-- **Doublons** : choisissez un dossier à analyser, puis déplacez ou supprimez
-  uniquement les doublons vérifiés.
-- **Historique** : consultez les opérations récentes et exportez un rapport.
-- **P2P / réseau local** : utilisez l'onglet P2P pour envoyer des fichiers à un
-  autre ordinateur TransferDesk.
-- **Aide** : vérifiez la version installée, le code de ce PC et les mises à jour.
+- **File transfer**: choose a source and destination, then run the preview or
+  the transfer.
+- **Duplicates**: choose a folder to scan, then move or delete only verified
+  duplicates.
+- **History**: review recent operations and export a report.
+- **P2P / local network**: use the P2P tab to send files to another TransferDesk
+  computer.
+- **Help**: check the installed version, this PC's code, and available updates.
 
-## Configuration réseau optionnelle
+## Optional Network Configuration
 
-Les transferts locaux fonctionnent sans configuration si les deux ordinateurs
-sont sur le même réseau.
+Local transfers work without configuration when both computers are on the same
+network.
 
-Pour le transfert Internet par code, TransferDesk peut utiliser un service de
-rendez-vous compatible. Créez `transferdesk-network.json` à la racine de l'application
-ou du projet :
+For Internet transfer by code, TransferDesk can use a compatible rendezvous
+service. Create `transferdesk-network.json` at the root of the application or
+project:
 
 ```json
 {
@@ -85,12 +83,12 @@ ou du projet :
 }
 ```
 
-Vous pouvez aussi définir la variable d'environnement `TRANSFERDESK_RENDEZVOUS_URL`.
-Sans cette configuration, les modes locaux et manuels restent utilisables.
+You can also define the `TRANSFERDESK_RENDEZVOUS_URL` environment variable.
+Without this configuration, local and manual modes remain available.
 
-## Compiler depuis le code source
+## Build from Source
 
-Prérequis : Python 3.12 ou 3.13.
+Requirement: Python 3.12 or 3.13.
 
 ### Windows
 
@@ -103,7 +101,7 @@ py -m unittest discover -v
 py -m PyInstaller --noconfirm --clean TransferDesk.spec
 ```
 
-Le paquet est créé dans :
+The package is created in:
 
 ```text
 dist\TransferDesk
@@ -120,15 +118,15 @@ python -m unittest discover -v
 python -m PyInstaller --noconfirm --clean TransferDesk.spec
 ```
 
-L'application est créée dans :
+The application is created in:
 
 ```text
 dist/TransferDesk.app
 ```
 
-Pour les détails de signature macOS, voir [BUILD-MACOS.md](BUILD-MACOS.md).
+For macOS signing details, see [BUILD-MACOS.md](BUILD-MACOS.md).
 
-## Lancer en mode développement
+## Run in Development Mode
 
 ```powershell
 py -m venv .venv
@@ -138,40 +136,40 @@ py -m pip install -r requirements.txt
 py transferdesk_qt.py
 ```
 
-Tests :
+Tests:
 
 ```powershell
 py -m unittest discover -v
 ```
 
-Auto-test réseau d'un paquet Windows :
+Network self-test for a Windows package:
 
 ```powershell
 .\dist\TransferDesk\TransferDesk.exe --self-test-network
 ```
 
-## Publier une nouvelle version
+## Publish a New Version
 
-La version de l'application est définie dans `transferdesk_version.py`.
+The application version is defined in `transferdesk_version.py`.
 
-Après avoir mis à jour la version et validé les tests, poussez un tag :
+After updating the version and validating the tests, push a tag:
 
 ```powershell
 git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-GitHub Actions construit alors automatiquement les paquets Windows et macOS,
-crée les fichiers `.sha256`, puis publie la GitHub Release.
+GitHub Actions then automatically builds the Windows and macOS packages, creates
+the `.sha256` files, and publishes the GitHub Release.
 
-Pour compléter une release déjà créée à la main, ouvrez **Actions > Release >
-Run workflow**, indiquez le tag existant, par exemple `v8.0.3`, puis lancez le
-workflow. GitHub reconstruit alors les assets Windows/macOS et les remplace dans
-la release.
+To complete a release that was already created manually, open **Actions >
+Release > Run workflow**, enter the existing tag, for example `v8.0.3`, then run
+the workflow. GitHub rebuilds the Windows/macOS assets and replaces them in the
+release.
 
-## Liens utiles
+## Useful Links
 
-- [BUILD-MACOS.md](BUILD-MACOS.md) : construction, signature et validation macOS.
-- [RELEASE-CHECKLIST.md](RELEASE-CHECKLIST.md) : recette avant livraison.
-- [CHANGELOG.md](CHANGELOG.md) : historique des changements visibles.
-- [MIGRATION-QT.md](MIGRATION-QT.md) : notes de migration technique vers Qt.
+- [BUILD-MACOS.md](BUILD-MACOS.md): macOS build, signing, and validation.
+- [RELEASE-CHECKLIST.md](RELEASE-CHECKLIST.md): pre-release checklist.
+- [CHANGELOG.md](CHANGELOG.md): history of visible changes.
+- [MIGRATION-QT.md](MIGRATION-QT.md): technical migration notes for Qt.
